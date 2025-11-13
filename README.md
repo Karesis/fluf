@@ -13,7 +13,7 @@ This library intentionally avoids the "template-in-C" macro magic (like `DEFINE_
 
 The design of `fluf` is a direct response to the "fake prosperity" of overly complex C libraries, which often lead to opaque errors, difficult debugging, and code bloat.
 
-Our philosophy is:
+The philosophy of fluf is:
 
 1.  **Debuggability First:** No magic. All core data structures (`vec_t`, `string_t`, `strhashmap_t`) are real, hand-written C implementations. You can `step-in` with GDB and see exactly what's happening.
 2.  **Concrete over Generic:** Instead of a complex, `memcpy`-based `DEFINE_VECTOR(T)` macro, `fluf` provides a single, highly-optimized `vec_t` (a `Vec<void*>`). In compiler development, you are almost always storing pointers (`AstNode*`, `Symbol*`, `Type*`), and a `Vec<void*>` is the simplest, fastest, and most honest C-native solution.
@@ -33,7 +33,7 @@ Our philosophy is:
 
 ### Standard Library (`include/std/`)
 
-  * **Memory (`std/allocer/bump.h`)**: A high-performance, multi-chunk **Bump (Arena) Allocator** (`bump_t`).
+  * **Memory (`std/allocer/bump/bump.h`)**: A high-performance, multi-chunk **Bump (Arena) Allocator** (`bump_t`).
   * **Strings**
       * **`std/string/str_slice.h`**: A `str_slice_t` (`{ ptr, len }`) view, the C-equivalent of `StringView` or `&str`.
       * **`std/string/string.h`**: A `string_t` dynamic string builder (like `Vec<char>`), guaranteeing a `\0` terminator.
@@ -44,7 +44,7 @@ Our philosophy is:
   * **I/O (`std/io/file.h`)**
       * `read_file_to_slice()`: Reads an entire file into `allocer_t`-managed memory.
       * `write_file_bytes()`: Writes a block of memory to a file.
-  * **Diagnostics (`std/diag/sourcemap.h`)**
+  * **Diagnostics (`std/io/sourcemap.h`)**
       * `sourcemap_t`: The "brain" of a compiler's error reporting. It maps a `span_t` (byte offset) back to a human-readable `filename:line:column`.
   * **Math (`std/math/bitset.h`)**
       * `bitset_t`: A high-performance bitset for data-flow analysis, supporting union, intersection, and difference.
@@ -54,8 +54,6 @@ Our philosophy is:
 This example demonstrates the core `fluf` philosophy: stack-based `_init`, an `allocer_t` v-table, and concrete `void*` containers.
 
 ```c
-#include <fluf/prelude.h> // (Assuming you create a prelude)
-
 // --- fluf core ---
 #include <core/msg/asrt.h>
 #include <core/mem/allocer.h>
