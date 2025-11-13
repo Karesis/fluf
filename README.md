@@ -49,7 +49,7 @@ Our philosophy is:
   * **Math (`std/math/bitset.h`)**
       * `bitset_t`: A high-performance bitset for data-flow analysis, supporting union, intersection, and difference.
 
-## 🚀 Quick Example
+## Quick Example
 
 This example demonstrates the core `fluf` philosophy: stack-based `_init`, an `allocer_t` v-table, and concrete `void*` containers.
 
@@ -119,7 +119,7 @@ int main(void) {
 }
 ```
 
-## 🛠️ Building & Testing
+## Building & Testing
 
 `fluf` is built with a simple, non-recursive `Makefile` and `clang`.
 
@@ -131,24 +131,6 @@ $ make
 ```sh
 # Build and run all unit tests
 $ make test
-...
-=== [fluf] Running tests for <std/bump> ===
-✅ All <std/bump> tests passed!
-=== [fluf] Running tests for <std/strhashmap> ===
-✅ All <std/strhashmap> tests passed!
-=== [fluf] Running tests for <std/strintern> ===
-✅ All <std/strintern> tests passed!
-=== [fluf] Running tests for <std/vec> ===
-✅ All <std/vec> tests passed!
-=== [fluf] Running tests for <std/io/file> ===
-✅ All <std/io/file> tests passed!
-=== [fluf] Running tests for <std/diag/sourcemap> ===
-✅ All <std/diag/sourcemap> tests passed!
-=== [fluf] Running tests for <std/string> ===
-✅ All <std/string> tests passed!
-=== [fluf] Running tests for <std/math/bitset> ===
-✅ All <std/math/bitset> tests passed!
---- [fluf] All Tests Passed ---
 ```
 
 ```sh
@@ -156,6 +138,6 @@ $ make test
 $ make clean
 ```
 
-## 📜 License
+## License
 
 This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE).
