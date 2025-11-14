@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@
  * 它的核心优势是 `len` 是 O(1) 的，并且它可以
  * "切片" (slice) 现有的内存（如源文件），而无需复制。
  */
-typedef struct {
+typedef struct str_slice {
   const char *ptr;
   size_t len;
 } str_slice_t;
@@ -60,7 +60,7 @@ static inline bool slice_equals(str_slice_t a, str_slice_t b) {
   if (a.len != b.len) {
     return false;
   }
-
+  // 必须使用 memcmp, 因为 strncmp 会在 \0 处停止
   return memcmp(a.ptr, b.ptr, a.len) == 0;
 }
 
@@ -68,10 +68,142 @@ static inline bool slice_equals(str_slice_t a, str_slice_t b) {
  * @brief (辅助函数) 比较切片和一个 C 字符串是否相等 (O(n))
  */
 static inline bool slice_equals_cstr(str_slice_t a, const char *b_cstr) {
-
+  // strncmp 在这里是安全的，因为 b_cstr 保证以 \0 结尾
   size_t b_len = strlen(b_cstr);
   if (a.len != b_len) {
     return false;
   }
   return strncmp(a.ptr, b_cstr, a.len) == 0;
+}
+
+/**
+ * @brief (辅助函数) 检查切片是否以指定前缀 (slice) 开头
+ */
+static inline bool slice_starts_with(str_slice_t s, str_slice_t prefix) {
+  if (s.len < prefix.len) {
+    return false;
+  }
+  return memcmp(s.ptr, prefix.ptr, prefix.len) == 0;
+}
+
+/**
+ * @brief (辅助函数) 检查切片是否以指定前缀 (C-string) 开头
+ */
+static inline bool slice_starts_with_cstr(str_slice_t s,
+                                          const char *prefix_cstr) {
+  size_t prefix_len = strlen(prefix_cstr); // <-- 修复
+  if (s.len < prefix_len) {
+    return false;
+  }
+  return memcmp(s.ptr, prefix_cstr, prefix_len) == 0;
+}
+
+/**
+ * @brief (辅助函数) 检查切片是否以指定后缀 (slice) 结尾
+ */
+static inline bool slice_ends_with(str_slice_t s, str_slice_t suffix) {
+  if (s.len < suffix.len) {
+    return false;
+  }
+  return memcmp(s.ptr + s.len - suffix.len, suffix.ptr, suffix.len) == 0;
+}
+
+/**
+ * @brief (辅助函数) 检查切片是否以指定后缀 (C-string) 结尾
+ */
+static inline bool slice_ends_with_cstr(str_slice_t s,
+                                        const char *suffix_cstr) {
+  size_t suffix_len = strlen(suffix_cstr); // <-- 新增
+  if (s.len < suffix_len) {
+    return false;
+  }
+  return memcmp(s.ptr + s.len - suffix_len, suffix_cstr, suffix_len) == 0;
+}
+
+/** (内部辅助) 检查一个 char 是否是 `cnote` 需要的空白符 */
+static inline bool _slice_is_whitespace(char c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
+/**
+ * @brief 修剪切片左侧（开头）的空白符
+ */
+static inline str_slice_t slice_trim_left(str_slice_t s) {
+  size_t start = 0;
+  while (start < s.len && _slice_is_whitespace(s.ptr[start])) {
+    start++;
+  }
+  return (str_slice_t){.ptr = s.ptr + start, .len = s.len - start};
+}
+
+/**
+ * @brief 修剪切片右侧（末尾）的空白符
+ */
+static inline str_slice_t slice_trim_right(str_slice_t s) {
+  size_t end = s.len;
+  while (end > 0 && _slice_is_whitespace(s.ptr[end - 1])) {
+    end--;
+  }
+  return (str_slice_t){.ptr = s.ptr, .len = end};
+}
+
+/**
+ * @brief 修剪切片两端的空白符
+ */
+static inline str_slice_t slice_trim(str_slice_t s) {
+  return slice_trim_right(slice_trim_left(s));
+}
+
+/**
+ * @brief (迭代器) 从切片中分离下一个子切片
+ *
+ * 这是一个 `fluf` 风格的 `strtok`。它会修改 `s_ptr` (输入切片)。
+ *
+ * @param s_ptr [in/out] 指向要进行 `split` 的切片的指针。
+ * @param delim 用于分割的分隔符。
+ * @param out_result [out] 存储找到的下一个子切片 (不含分隔符)。
+ * @return true (如果找到了一个切片) 或 false (如果 `s_ptr` 已经是空的)。
+ *
+ * @example
+ * str_slice_t s = SLICE_LITERAL("a,b,c");
+ * str_slice_t token;
+ * while (slice_split_next(&s, ',', &token)) {
+ * // 第一次: token = "a", s = "b,c"
+ * // 第二次: token = "b", s = "c"
+ * // 第三次: token = "c", s = ""
+ * }
+ */
+static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
+                                    str_slice_t *out_result) {
+  if (s_ptr->len == 0 && s_ptr->ptr == NULL) {
+    // (ptr == NULL 是一个哨兵，表示迭代已完成)
+    return false;
+  }
+
+  // 1. 查找分隔符
+  void *delim_ptr = memchr(s_ptr->ptr, delim, s_ptr->len);
+
+  if (delim_ptr != NULL) {
+    // 2. 找到了分隔符
+    size_t pos = (const char *)delim_ptr - s_ptr->ptr;
+
+    // a. 设置结果
+    *out_result = (str_slice_t){.ptr = s_ptr->ptr, .len = pos};
+
+    // b. 修改输入切片 (跳过分隔符)
+    s_ptr->ptr += (pos + 1);
+    s_ptr->len -= (pos + 1);
+
+    return true;
+  } else {
+    // 3. 未找到分隔符 (这是最后一个切片)
+
+    // a. 设置结果 (为剩余的整个切片)
+    *out_result = *s_ptr;
+
+    // b. 修改输入切片 (设置为空哨兵)
+    *s_ptr = (str_slice_t){.ptr = NULL, .len = 0};
+
+    return true;
+  }
 }
