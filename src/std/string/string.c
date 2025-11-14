@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@
 #include <core/mem/layout.h>
 #include <core/msg/asrt.h>
 #include <std/string/string.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <string.h>
 
 #define STRING_DEFAULT_CAPACITY 8
@@ -143,6 +145,62 @@ bool string_append_slice(string_t *s, str_slice_t slice) {
   s->data[s->count] = '\0';
 
   return true;
+}
+
+/**
+ * @brief string_append_fmt 的 va_list 版本 (内部辅助)
+ *
+ */
+static bool string_append_vfmt(string_t *s, const char *fmt, va_list args) {
+  // --- 1. 第一次调用 vsnprintf (两阶段技巧) ---
+  // C 语言标准：vsnprintf(NULL, 0, ...) 会返回*需要*的字节数
+
+  va_list args_copy; // 我们需要复制 va_list，因为 vsnprintf 会消耗它
+  va_copy(args_copy, args);
+
+  int needed = vsnprintf(NULL, 0, fmt, args_copy);
+  va_end(args_copy);
+
+  if (needed < 0) {
+    // 格式化错误
+    return false;
+  }
+  size_t needed_len = (size_t)needed;
+
+  // --- 2. 确保容量 ---
+  if (!string_grow(s, needed_len)) {
+    return false; // OOM
+  }
+
+  // --- 3. 第二次调用 vsnprintf (真正写入) ---
+  // (我们直接写入 `s->data` 缓冲区的末尾)
+  char *write_ptr = s->data + s->count;
+  size_t remaining_capacity = s->capacity - s->count;
+
+  // (我们知道我们有足够空间，所以 vsnprintf 不会截断)
+  int written = vsnprintf(write_ptr, remaining_capacity + 1, fmt, args);
+
+  if (written < 0 || (size_t)written != needed_len) {
+    // (理论上不应该发生，除非格式化再次出错)
+    return false;
+  }
+
+  // --- 4. 更新 state (关键) ---
+  s->count += needed_len;
+  // (vsnprintf 已经自动写入了 \0，所以我们不需要 s->data[s->count] = '\0')
+
+  return true;
+}
+
+/**
+ * @brief (公共 API) 格式化追加
+ */
+bool string_append_fmt(string_t *s, const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  bool ok = string_append_vfmt(s, fmt, args);
+  va_end(args);
+  return ok;
 }
 
 void string_clear(string_t *s) {

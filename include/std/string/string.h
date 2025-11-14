@@ -79,6 +79,16 @@ bool string_append_cstr(string_t *s, const char *cstr);
 bool string_append_slice(string_t *s, str_slice_t slice);
 
 /**
+ * @brief 将 printf 风格的格式化字符串追加到末尾。
+ *
+ * @param s string 实例。
+ * @param fmt printf 风格的格式化字符串。
+ * @param ... 格式化参数。
+ * @return true (成功) 或 false (OOM / 扩容失败)。
+ */
+bool string_append_fmt(string_t *s, const char *fmt, ...);
+
+/**
  * @brief 清空字符串 (count=0) 但保留容量。
  */
 void string_clear(string_t *s);
