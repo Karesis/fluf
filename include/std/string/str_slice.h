@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <core/mem/allocer.h>
+#include <core/mem/layout.h>
 #include <core/msg/asrt.h>
 #include <stdbool.h>
 #include <stddef.h>
