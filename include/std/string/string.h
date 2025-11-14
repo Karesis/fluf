@@ -105,7 +105,7 @@ void string_clear(string_t *s);
  * (变为悬垂指针)，因为它可能触发 `realloc`。
  *
  * 如果你需要在循环、递归或跨越修改操作时持有此字符串，
- * **必须**使用 `allocer_strdup(alc, string_as_cstr(s))` 来创建一个安全副本。
+ * **必须**使用 `cstr_dup(string_as_cstr(s), alc)` 来创建一个安全副本。
  */
 const char *string_as_cstr(const string_t *s);
 
