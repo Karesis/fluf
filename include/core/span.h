@@ -51,8 +51,8 @@ static inline size_t span_len(span_t span) { return span.end - span.start; }
  *
  * @example
  * for_range(i, 0, 10) { // i 将从 0 到 9
- * dbg("i = %zu", i);
- * }
+ *   dbg("i = %zu", i);
+ *  }
  */
 #define for_range(var, start, end)                                             \
   for (size_t var = (start); var < (end); var++)
@@ -63,7 +63,7 @@ static inline size_t span_len(span_t span) { return span.end - span.start; }
  * @example
  * span_t r = range(5, 10);
  * for_range_in(i, r) { // i 将从 5 到 9
- * dbg("i = %zu", i);
+ *  dbg("i = %zu", i);
  * }
  */
 #define for_range_in(var, range_obj)                                           \
