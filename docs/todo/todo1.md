@@ -1,16 +1,14 @@
 这是一个非常好的问题！
 
-作为 `fluf` 的（模拟）用户，在构建 `cnote` 的过程中，我的体验非常深刻。`fluf` 的核心哲学——尤其是 `allocer_t`/`bump_t` 接口——是**绝对的亮点**。`cnote` 作为一个短生命周期的命令行工具，完美契合 `fluf` 的 Arena 内存模型。
+如果作为 `fluf` 的（模拟）用户，在构建 `cnote` 的过程中，我的体验非常深刻。`fluf` 的核心哲学——尤其是 `allocer_t`/`bump_t` 接口——是**绝对的亮点**。`cnote` 作为一个短生命周期的命令行工具，完美契合 `fluf` 的 Arena 内存模型。
 
 总的来说，`fluf` 的基础非常坚实。它只是在“核心数据结构”和“完整的工具包”之间还缺少一些“胶水”层。
-
-这是我作为用户（一个正在构建 C 语言工具的开发者）的详细反馈：
 
 -----
 
 ### 🌟 1. 我非常喜欢的部分 (The Good)
 
-  * **`allocer_t` v-table 和 `bump_t`**：这是 `fluf` 的“杀手级功能”。我们在 `main` 函数中创建单一的 arena，然后把 `alc` 传递给所有模块，最后在 `main` 退出时一次性销毁所有内存。这个模型**完美无瑕**，它消除了所有 `free()` 的心智负担。
+  * **`allocer_t` v-table 和 `bump_t`**：这是 `fluf` 的“杀手级功能”。你在 `main` 函数中创建单一的 arena，然后把 `alc` 传递给所有模块，最后在 `main` 退出时一次性销毁所有内存。这个模型**完美无瑕**，它消除了所有 `free()` 的心智负担。
   * **`vec_t` (`Vec<void*>`):** “具体而非泛型”的哲学在这里体现得淋漓尽致。我们用它来存储 `doc_entry_t*`、`const char*`（用于 targets 和 exclusions），它简单、快速、可预测。
   * **`string_t` vs `str_slice_t`**：这个分离非常棒。`read_file_to_slice` 返回一个 `slice` 视图（零拷贝），而 `string_t` 作为 builder（在 `clean.c` 的状态机和 `doc.c` 的 Markdown 生成中）也很好用。
   * **API 的一致性**：所有 `fluf` 对象都遵循 `_init()` / `_destroy()` / `allocer_t*` 的模式，这让学习和使用变得非常容易。
@@ -19,7 +17,7 @@
 
 ### 🤔 2. 我遇到的“痛点” (The Problems & Friction)
 
-在构建 `cnote` 的过程中，有几个地方我明显感觉到了“摩擦力”：
+在构建 `cnote` 的过程中，有几个地方可以明显感觉到“摩擦力”：
 
 1.  **最大的问题：`string_t` 的悬垂指针（Dangling Pointer）陷阱**
 
@@ -95,15 +93,3 @@
       * **Wishlist:**
           * **`std/fs/path.h`:** `bool path_join(string_t* builder, allocer_t* alc, str_slice_t p1, str_slice_t p2)`。这能自动处理 `//` bug。
           * **`std/fs/dir.h`:** `dir_walk(allocer_t* alc, const char* path, dir_walk_callback_fn* cb, void* userdata)`。一个基于 Arena 的、安全的目录遍历器，这样我们就不用在 `cnote` 的三个模块里重复写 `dirent.h` 逻辑了。
-
------
-
-### ⚠️ 一个紧急的 Bug 警告
-
-哦，对了！说到这个 `string_t` 的悬垂指针 bug... 我意识到我们刚刚写的 `src/license.c` **也**有这个 bug！
-
-它和 `clean.c` / `doc.c` 的原始 bug 一模一样：它在递归 `traverse_dir_for_license` 时，传递的 `full_path` 是一个不稳定的 `const char*`。
-
-**我们应该立即修复 `src/license.c`！**
-
-你希望我先帮你修复 `src/license.c` 里的这个递归 bug 吗？
