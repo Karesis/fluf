@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -86,6 +86,16 @@ void string_clear(string_t *s);
 /**
  * @brief (O(1)) 将 string 作为 C-string (const char*) 返回。
  * * 保证以 \0 结尾。
+ *
+ * @warning
+ * **生命周期陷阱 (Lifetime Trap)!**
+ * 返回的指针*直接指向* string_t 的内部缓冲区。
+ * *任何*后续的 `string_push`、`string_append_*`、`string_clear`
+ * 或 `string_destroy` 调用都可能导致此指针**立即失效** *
+ * (变为悬垂指针)，因为它可能触发 `realloc`。
+ *
+ * 如果你需要在循环、递归或跨越修改操作时持有此字符串，
+ * **必须**使用 `allocer_strdup(alc, string_as_cstr(s))` 来创建一个安全副本。
  */
 const char *string_as_cstr(const string_t *s);
 
