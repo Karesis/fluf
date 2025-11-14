@@ -136,6 +136,16 @@ $ make test
 $ make clean
 ```
 
+## Documentation
+
+The detailed API reference is generated from source comments using [`cnote`](https://github.com/Karesis/cnote)
+
+You can browse the full API documentation by starting with the main table of contents:
+
+* **Full API Reference (Table of Contents)**: [docs/reference/SUMMARY.md](docs/reference/SUMMARY.md)
+
+This includes all public headers (e.g., `vec_t`, `bump_t`, `strintern_t`) with function signatures and detailed descriptions.
+
 ## License
 
 This project is licensed under the [Apache-2.0](LICENSE).
