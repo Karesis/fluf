@@ -207,3 +207,30 @@ static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
     return true;
   }
 }
+
+/**
+ * @brief (核心) 复制一个 `str_slice_t` 到分配器中。
+ *
+ * (fluf 版本的 strndup)
+ * 这将创建一个*新的*、以 '\0' 结尾的 C 字符串。
+ *
+ * @param slice 要复制的切片 (不要求 \0 结尾)。
+ * @param alc 用于分配新字符串的分配器。
+ * @return 一个指向新副本的 `char*`，或 OOM 时返回 NULL。
+ */
+static inline char *slice_dup(str_slice_t slice, allocer_t *alc) {
+  asrt_msg(alc != NULL, "Allocator cannot be NULL");
+
+  // (len + 1) 用于 \0
+  layout_t layout = layout_of_array(char, slice.len + 1);
+
+  char *new_str = (char *)allocer_alloc(alc, layout);
+  if (new_str == NULL) {
+    return NULL; // OOM
+  }
+
+  memcpy(new_str, slice.ptr, slice.len);
+  new_str[slice.len] = '\0'; // 确保 \0 结尾
+
+  return new_str;
+}
