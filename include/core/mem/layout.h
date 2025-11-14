@@ -1,9 +1,9 @@
 #pragma once
 
 #include <core/msg/asrt.h>
-#include <stddef.h>
-#include <stdbool.h>
 #include <stdalign.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 /**
  * @brief 内存请求描述符 (Memory Request Descriptor)
@@ -11,19 +11,16 @@
  * 描述了一个内存块的大小和对齐要求。
  * 这等同于 Rust 的 `std::alloc::Layout`。
  */
-typedef struct layout
-{
-    size_t size;
-    size_t align;
+typedef struct layout {
+  size_t size;
+  size_t align;
 } layout_t;
 
 /**
  * @brief 辅助函数：检查 align 是否是 2 的幂
  */
-static inline bool
-_is_power_of_two(size_t n)
-{
-    return (n > 0) && ((n & (n - 1)) == 0);
+static inline bool _is_power_of_two(size_t n) {
+  return (n > 0) && ((n & (n - 1)) == 0);
 }
 
 /**
@@ -35,11 +32,9 @@ _is_power_of_two(size_t n)
  * @return layout_t 描述符。
  * @panic 如果 align 不是 2 的幂，触发 assert。
  */
-static inline layout_t
-layout_from_size_align(size_t size, size_t align)
-{
-    asrt_msg(_is_power_of_two(align), "Layout alignment must be a power of two");
-    return (layout_t){.size = size, .align = align};
+static inline layout_t layout_from_size_align(size_t size, size_t align) {
+  asrt_msg(_is_power_of_two(align), "Layout alignment must be a power of two");
+  return (layout_t){.size = size, .align = align};
 }
 
 /**
@@ -59,4 +54,5 @@ layout_from_size_align(size_t size, size_t align)
  * @param N 元素数量。
  * @return Layout 描述符。
  */
-#define layout_of_array(T, N) (layout_from_size_align(sizeof(T) * (N), alignof(T)))
+#define layout_of_array(T, N)                                                  \
+  (layout_from_size_align(sizeof(T) * (N), alignof(T)))

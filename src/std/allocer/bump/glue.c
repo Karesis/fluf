@@ -1,8 +1,8 @@
-#include <std/allocer/bump/glue.h>
-#include <std/allocer/bump/bump.h>
 #include <core/mem/allocer.h>
 #include <core/msg/asrt.h>
-#include <string.h> // for memset
+#include <std/allocer/bump/bump.h>
+#include <std/allocer/bump/glue.h>
+#include <string.h>
 
 /*
  * ===================================================================
@@ -14,44 +14,26 @@
  * ===================================================================
  */
 
-static void *
-bump_vtable_alloc(void *self, layout_t layout)
-{
-  // "self" 指针就是我们的 bump_t*
-  // bump_alloc_layout 可能会 OOM 返回 NULL，这符合 vtable 的预期
+static void *bump_vtable_alloc(void *self, layout_t layout) {
+
   return bump_alloc_layout((bump_t *)self, layout);
 }
 
-static void
-bump_vtable_free(void *self, void *ptr, layout_t layout)
-{
-  (void)self; // Bump Arena 不支持单独释放
+static void bump_vtable_free(void *self, void *ptr, layout_t layout) {
+  (void)self;
   (void)ptr;
   (void)layout;
-  // 什么也不做 (This is the point of an arena)
 }
 
-static void *
-bump_vtable_realloc(
-    void *self,
-    void *ptr,
-    layout_t old_layout,
-    layout_t new_layout)
-{
-  // bump_realloc 只是 "alloc + copy"
-  // 注意它需要 old_size，我们从 old_layout 中获取
-  return bump_realloc(
-      (bump_t *)self,
-      ptr,
-      old_layout.size,
-      new_layout.size,
-      new_layout.align);
+static void *bump_vtable_realloc(void *self, void *ptr, layout_t old_layout,
+                                 layout_t new_layout) {
+
+  return bump_realloc((bump_t *)self, ptr, old_layout.size, new_layout.size,
+                      new_layout.align);
 }
 
-static void *
-bump_vtable_zalloc(void *self, layout_t layout)
-{
-  // 我们重用 bump_alloc_layout_zeroed (它在 bump.c 中)
+static void *bump_vtable_zalloc(void *self, layout_t layout) {
+
   return bump_alloc_layout_zeroed((bump_t *)self, layout);
 }
 
@@ -78,12 +60,8 @@ static const allocer_vtable_t BUMP_ALLOC_VTABLE = {
  * ===================================================================
  */
 
-allocer_t
-bump_to_allocer(bump_t *bump)
-{
+allocer_t bump_to_allocer(bump_t *bump) {
   asrt_msg(bump != NULL, "bump_t* cannot be NULL");
 
-  return (allocer_t){
-      .self = (void *)bump,
-      .vtable = &BUMP_ALLOC_VTABLE};
+  return (allocer_t){.self = (void *)bump, .vtable = &BUMP_ALLOC_VTABLE};
 }

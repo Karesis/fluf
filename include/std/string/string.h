@@ -1,9 +1,9 @@
 #pragma once
 
-#include <core/mem/allocer.h>     // 依赖 vtable
-#include <std/string/str_slice.h> // 依赖切片
+#include <core/mem/allocer.h>
+#include <std/string/str_slice.h>
 #include <stdbool.h>
-#include <stddef.h> // for size_t
+#include <stddef.h>
 
 /**
  * @brief 动态字符串构建器
@@ -13,12 +13,11 @@
  *
  * (遵循 bump_t/interner_t/vec_t 模式, 在栈上初始化)
  */
-typedef struct string
-{
+typedef struct string {
   allocer_t *alc;
-  char *data;      // 指向一个由 alc 分配的、\0 结尾的缓冲区
-  size_t count;    // *不*包含 \0 的长度 (即 strlen(data))
-  size_t capacity; // *不*包含 \0 的容量
+  char *data;
+  size_t count;
+  size_t capacity;
 } string_t;
 
 /**

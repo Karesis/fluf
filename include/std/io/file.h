@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/mem/allocer.h> // 依赖 vtable
+#include <core/mem/allocer.h>
 #include <std/string/str_slice.h>
 #include <stdbool.h>
 
@@ -17,7 +17,8 @@
  * `out_slice.len` 是文件的 *实际* 字节大小 (不含 \0)。
  * @return true (成功) 或 false (文件无法打开, 或 OOM)。
  */
-bool read_file_to_slice(allocer_t *alc, const char *path, str_slice_t *out_slice);
+bool read_file_to_slice(allocer_t *alc, const char *path,
+                        str_slice_t *out_slice);
 
 /**
  * @brief 将一块内存写入文件。

@@ -1,13 +1,11 @@
 #pragma once
 
-#include <core/span.h>            // 1. 包含通用的 span.h
-#include <std/string/str_slice.h> // 2. 依赖 str_slice.h
-#include <core/mem/allocer.h>     // 3. 依赖分配器
+#include <core/mem/allocer.h>
+#include <core/span.h>
+#include <std/string/str_slice.h>
 #include <std/vec.h>
 #include <stdbool.h>
 #include <stddef.h>
-
-// --- 语义类型别名 (你的提议) ---
 
 /**
  * @brief (语义别名) 在诊断上下文中, span_t 被称为 source_span_t
@@ -17,11 +15,10 @@ typedef span_t source_span_t;
 /**
  * @brief (数据) 源码管理器查找的结果
  */
-typedef struct source_loc
-{
+typedef struct source_loc {
   const char *filename;
-  size_t line;   // 行号 (从 1 开始)
-  size_t column; // 列号 (从 1 开始)
+  size_t line;
+  size_t column;
 } source_loc_t;
 
 /**
@@ -30,10 +27,9 @@ typedef struct source_loc
  * `sourcemap_t` 是一个有状态的对象，它在栈上分配，
  * 并使用 `allocer_t` 来管理其*内部*的动态内存。
  */
-typedef struct sourcemap
-{
+typedef struct sourcemap {
   allocer_t *alc;
-  vec_t files; // Vec<SourceFile*>
+  vec_t files;
   size_t total_size;
 } sourcemap_t;
 /**
@@ -61,7 +57,8 @@ void sourcemap_destroy(sourcemap_t *map);
  * @param slice 从 `read_file_to_slice` 获得的源文件内容。
  * @return 一个 "FileID" (文件索引)，如果失败则返回 (size_t)-1
  */
-size_t sourcemap_add_file(sourcemap_t *map, const char *filename, str_slice_t slice);
+size_t sourcemap_add_file(sourcemap_t *map, const char *filename,
+                          str_slice_t slice);
 
 /**
  * @brief (核心) 将全局字节偏移量转换为 "行:列"
@@ -71,13 +68,14 @@ size_t sourcemap_add_file(sourcemap_t *map, const char *filename, str_slice_t sl
  * @param out_loc [out] 成功时，写入结果
  * @return true (成功) 或 false (偏移量越界)
  */
-bool sourcemap_lookup(const sourcemap_t *map, size_t offset, source_loc_t *out_loc);
+bool sourcemap_lookup(const sourcemap_t *map, size_t offset,
+                      source_loc_t *out_loc);
 
 /**
  * @brief (辅助) 将一个 `source_span_t` 转换为起始位置
  */
-static inline bool
-sourcemap_lookup_span(const sourcemap_t *map, source_span_t span, source_loc_t *out_loc)
-{
+static inline bool sourcemap_lookup_span(const sourcemap_t *map,
+                                         source_span_t span,
+                                         source_loc_t *out_loc) {
   return sourcemap_lookup(map, span.start, out_loc);
 }

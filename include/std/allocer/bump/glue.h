@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/mem/allocer.h>      // 包含抽象接口
-#include <std/allocer/bump/bump.h> // 包含具体实现
+#include <core/mem/allocer.h>
+#include <std/allocer/bump/bump.h>
 
 /**
  * @brief "构造"一个 allocer_t 句柄

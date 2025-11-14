@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/mem/allocer.h> // 使用我们的 vtable 接口
+#include <core/mem/allocer.h>
 #include <stdbool.h>
 
 /**

@@ -11,8 +11,7 @@
  * 指向第一个节点。 对于空链表，`prev` 和 `next`
  * 都指向链表头自己。
  */
-typedef struct idlist
-{
+typedef struct idlist {
   struct idlist *prev;
   struct idlist *next;
 } idlist;
@@ -21,9 +20,7 @@ typedef struct idlist
  * @brief 初始化一个链表头 (或一个独立的节点)
  * @param list 要初始化的链表头
  */
-static inline void
-idlist_init(idlist *list)
-{
+static inline void idlist_init(idlist *list) {
   list->prev = list;
   list->next = list;
 }
@@ -34,9 +31,7 @@ idlist_init(idlist *list)
  * @param next 后一个节点
  * @param node 要插入的新节点
  */
-static inline void
-__idlist_add(idlist *prev, idlist *next, idlist *node)
-{
+static inline void __idlist_add(idlist *prev, idlist *next, idlist *node) {
   next->prev = node;
   node->next = next;
   node->prev = prev;
@@ -48,9 +43,7 @@ __idlist_add(idlist *prev, idlist *next, idlist *node)
  * @param head 链表头
  * @param node 要添加的节点
  */
-static inline void
-idlist_add_tail(idlist *head, idlist *node)
-{
+static inline void idlist_add_tail(idlist *head, idlist *node) {
   __idlist_add(head->prev, head, node);
 }
 
@@ -59,9 +52,7 @@ idlist_add_tail(idlist *head, idlist *node)
  * @param head 链表头
  * @param node 要添加的节点
  */
-static inline void
-idlist_add_head(idlist *head, idlist *node)
-{
+static inline void idlist_add_head(idlist *head, idlist *node) {
   __idlist_add(head, head->next, node);
 }
 
@@ -69,9 +60,7 @@ idlist_add_head(idlist *head, idlist *node)
  * @brief 从链表中删除一个节点 (并重置该节点)
  * @param node 要删除的节点
  */
-static inline void
-idlist_del(idlist *node)
-{
+static inline void idlist_del(idlist *node) {
   node->next->prev = node->prev;
   node->prev->next = node->next;
   idlist_init(node);
@@ -82,9 +71,7 @@ idlist_del(idlist *node)
  * @param head 链表头
  * @return bool
  */
-static inline bool
-idlist_empty(const idlist *head)
-{
+static inline bool idlist_empty(const idlist *head) {
   return head->next == head;
 }
 
@@ -100,8 +87,9 @@ idlist_empty(const idlist *head)
  * @param iter_node 用于迭代的 idlist* 临时变量 (如 struct
  * idlist *node)
  */
-#define idlist_for_each(head, iter_node) \
-  for ((iter_node) = (head)->next; (iter_node) != (head); (iter_node) = (iter_node)->next)
+#define idlist_for_each(head, iter_node)                                       \
+  for ((iter_node) = (head)->next; (iter_node) != (head);                      \
+       (iter_node) = (iter_node)->next)
 
 /**
  * @brief 遍历链表 (安全版，允许在遍历时删除节点)
@@ -110,6 +98,7 @@ idlist_empty(const idlist *head)
  * @param temp_node 另一个 idlist* 临时变量，用于暂存 next
  * 节点
  */
-#define idlist_for_each_safe(head, iter_node, temp_node)                                   \
-  for ((iter_node) = (head)->next, (temp_node) = (iter_node)->next; (iter_node) != (head); \
+#define idlist_for_each_safe(head, iter_node, temp_node)                       \
+  for ((iter_node) = (head)->next, (temp_node) = (iter_node)->next;            \
+       (iter_node) != (head);                                                  \
        (iter_node) = (temp_node), (temp_node) = (iter_node)->next)

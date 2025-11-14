@@ -1,9 +1,9 @@
 #pragma once
 
-#include <core/mem/allocer.h>     // 依赖 vtable
-#include <std/string/str_slice.h> // 依赖切片
+#include <core/mem/allocer.h>
+#include <std/string/str_slice.h>
 #include <stdbool.h>
-#include <stddef.h> // for size_t
+#include <stddef.h>
 
 /**
  * @brief 字符串驻留器
@@ -12,10 +12,9 @@
  * 它接收 `str_slice_t`，并返回一个唯一的、保证
  * 以 '\0' 结尾的 `const char*`。
  */
-typedef struct strintern
-{
+typedef struct strintern {
   allocer_t *alc;
-  const char **entries; // 哈希表槽位 (一个 `const char*` 数组)
+  const char **entries;
   size_t capacity;
   size_t count;
 } strintern_t;
@@ -26,7 +25,8 @@ typedef struct strintern
  * @param alc 用于所有内部存储的分配器 (vtable 句柄)。
  * @return true (成功) 或 false (OOM)。
  */
-bool strintern_init(strintern_t *interner, allocer_t *alc, size_t initial_capacity);
+bool strintern_init(strintern_t *interner, allocer_t *alc,
+                    size_t initial_capacity);
 
 /**
  * @brief 销毁 interner 的内部数据 (entries 数组)。

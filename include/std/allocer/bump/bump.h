@@ -1,11 +1,11 @@
 #pragma once
 
+#include <core/mem/layout.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdalign.h>
 #include <string.h>
-#include <core/mem/layout.h>
 
 /*
  * * 内存布局:
@@ -19,8 +19,7 @@
  * 向 data 方向（低地址）移动。
  */
 typedef struct chunkfooter chunkfooter_t;
-struct chunkfooter
-{
+struct chunkfooter {
   unsigned char *data;
   size_t chunk_size;
   chunkfooter_t *prev;
@@ -31,8 +30,7 @@ struct chunkfooter
 /*
  * 对应 Rust 的 bump_t
  */
-typedef struct bump
-{
+typedef struct bump {
 
   chunkfooter_t *current_chunk_footer;
 
@@ -163,13 +161,15 @@ char *bump_alloc_str(bump_t *bump, const char *str);
  * 并 "泄露" (abandon) 旧的 [old_ptr] 内存块。
  *
  * @param bump Arena。
- * @param old_ptr 指向要 "重新分配" 的旧内存块。如果为 NULL，则等同于 bump_alloc。
+ * @param old_ptr 指向要 "重新分配" 的旧内存块。如果为 NULL，则等同于
+ * bump_alloc。
  * @param old_size *旧内存块中要复制的数据大小*。
  * @param new_size *要分配的新内存块的总大小*。
  * @param align 新内存块的对齐方式。
  * @return void* 成功则返回指向*新*内存块的指针，失败返回 NULL。
  */
-void *bump_realloc(bump_t *bump, void *old_ptr, size_t old_size, size_t new_size, size_t align);
+void *bump_realloc(bump_t *bump, void *old_ptr, size_t old_size,
+                   size_t new_size, size_t align);
 
 /*
  * --- 容量和限制 ---
@@ -200,19 +200,19 @@ size_t bump_get_allocated_bytes(bump_t *bump);
  * BUMP_ALLOC(&my_arena, ...) [错误]
  * @param T 要分配的类型
  */
-#define BUMP_ALLOC(bump_ptr, T) \
+#define BUMP_ALLOC(bump_ptr, T)                                                \
   ((T *)bump_alloc_layout((bump_ptr), layout_of(T)))
 
-#define BUMP_ALLOC_SLICE(bump_ptr, T, count) \
+#define BUMP_ALLOC_SLICE(bump_ptr, T, count)                                   \
   ((T *)bump_alloc_layout((bump_ptr), layout_of_array(T, (count))))
 
-#define BUMP_ALLOC_SLICE_COPY(bump_ptr, T, src_ptr, count) \
+#define BUMP_ALLOC_SLICE_COPY(bump_ptr, T, src_ptr, count)                     \
   ((T *)bump_alloc_copy((bump_ptr), (src_ptr), sizeof(T) * (count), alignof(T)))
 
-#define BUMP_ALLOC_ZEROED(bump_ptr, T) \
+#define BUMP_ALLOC_ZEROED(bump_ptr, T)                                         \
   ((T *)bump_alloc_layout_zeroed((bump_ptr), layout_of(T)))
 
-#define BUMP_ALLOC_SLICE_ZEROED(bump_ptr, T, count) \
+#define BUMP_ALLOC_SLICE_ZEROED(bump_ptr, T, count)                            \
   ((T *)bump_alloc_layout_zeroed((bump_ptr), layout_of_array(T, (count))))
 
 /**
@@ -224,5 +224,6 @@ size_t bump_get_allocated_bytes(bump_t *bump);
  * @param old_count 要复制的 *元素* 数量 (来自旧 slice)。
  * @param new_count 要分配的 *元素* 数量 (用于新 slice)。
  */
-#define BUMP_REALLOC_SLICE(bump_ptr, T, old_ptr, old_count, new_count) \
-  ((T *)bump_realloc((bump_ptr), (old_ptr), sizeof(T) * (old_count), sizeof(T) * (new_count), alignof(T)))
+#define BUMP_REALLOC_SLICE(bump_ptr, T, old_ptr, old_count, new_count)         \
+  ((T *)bump_realloc((bump_ptr), (old_ptr), sizeof(T) * (old_count),           \
+                     sizeof(T) * (new_count), alignof(T)))

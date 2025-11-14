@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stddef.h> // for size_t
-#include <string.h> // for strlen, memcmp, strncmp
 #include <core/msg/asrt.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
 
 /**
  * @brief 字符串切片 (String Slice / View)
@@ -14,8 +14,7 @@
  * 它的核心优势是 `len` 是 O(1) 的，并且它可以
  * "切片" (slice) 现有的内存（如源文件），而无需复制。
  */
-typedef struct
-{
+typedef struct {
   const char *ptr;
   size_t len;
 } str_slice_t;
@@ -33,9 +32,7 @@ typedef struct
  * @brief (辅助函数) 从 C 字符串 (const char*) 创建切片
  * * 这是一个 O(n) 操作，因为它调用了 strlen。
  */
-static inline str_slice_t
-slice_from_cstr(const char *cstr)
-{
+static inline str_slice_t slice_from_cstr(const char *cstr) {
   asrt_msg(cstr != NULL, "Cannot create slice from NULL c-string");
   return (str_slice_t){.ptr = cstr, .len = strlen(cstr)};
 }
@@ -43,28 +40,21 @@ slice_from_cstr(const char *cstr)
 /**
  * @brief (辅助函数) 比较两个切片是否相等 (O(n))
  */
-static inline bool
-slice_equals(str_slice_t a, str_slice_t b)
-{
-  if (a.len != b.len)
-  {
+static inline bool slice_equals(str_slice_t a, str_slice_t b) {
+  if (a.len != b.len) {
     return false;
   }
-  // 我们必须使用 memcmp, 因为 strncmp 会在 \0 处停止
-  // (我们的切片中可能包含 \0)
+
   return memcmp(a.ptr, b.ptr, a.len) == 0;
 }
 
 /**
  * @brief (辅助函数) 比较切片和一个 C 字符串是否相等 (O(n))
  */
-static inline bool
-slice_equals_cstr(str_slice_t a, const char *b_cstr)
-{
-  // strncmp 在这里是安全的，因为 b_cstr 保证以 \0 结尾
+static inline bool slice_equals_cstr(str_slice_t a, const char *b_cstr) {
+
   size_t b_len = strlen(b_cstr);
-  if (a.len != b_len)
-  {
+  if (a.len != b_len) {
     return false;
   }
   return strncmp(a.ptr, b_cstr, a.len) == 0;

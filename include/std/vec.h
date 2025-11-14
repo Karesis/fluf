@@ -1,8 +1,8 @@
 #pragma once
 
-#include <core/mem/allocer.h> // 依赖 vtable
+#include <core/mem/allocer.h>
 #include <stdbool.h>
-#include <stddef.h> // for size_t
+#include <stddef.h>
 
 /**
  * @brief (Opaque) 指针动态数组 (Vec<void*>)
@@ -12,12 +12,11 @@
  *
  * (遵循 bump_t/strintern_t 模式, 在栈上初始化)
  */
-typedef struct vec
-{
+typedef struct vec {
   allocer_t *alc;
-  void **data;     // 指向一个 `void*` 数组
-  size_t count;    // 当前元素数量
-  size_t capacity; // 数组总容量
+  void **data;
+  size_t count;
+  size_t capacity;
 } vec_t;
 
 /**

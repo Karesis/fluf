@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/mem/allocer.h> // <-- 依赖抽象 Allocer
+#include <core/mem/allocer.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -8,9 +8,8 @@
 /**
  * @brief 一个高密度位集 (在栈上初始化)
  */
-typedef struct bitset
-{
-  allocer_t *alc; // <-- 使用 fluf 的分配器
+typedef struct bitset {
+  allocer_t *alc;
   size_t num_bits;
   size_t num_words;
   uint64_t *words;
@@ -46,9 +45,11 @@ void bitset_set_all(bitset_t *bs);
 void bitset_clear_all(bitset_t *bs);
 bool bitset_equals(const bitset_t *bs1, const bitset_t *bs2);
 void bitset_copy(bitset_t *dest, const bitset_t *src);
-void bitset_intersect(bitset_t *dest, const bitset_t *src1, const bitset_t *src2);
+void bitset_intersect(bitset_t *dest, const bitset_t *src1,
+                      const bitset_t *src2);
 void bitset_union(bitset_t *dest, const bitset_t *src1, const bitset_t *src2);
-void bitset_difference(bitset_t *dest, const bitset_t *src1, const bitset_t *src2);
+void bitset_difference(bitset_t *dest, const bitset_t *src1,
+                       const bitset_t *src2);
 
 /**
  * @brief [调试用] 统计集合中 1 的数量 (使用 Clang intrinsic，非常快)

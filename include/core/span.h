@@ -5,8 +5,7 @@
 /**
  * @brief (结构体) 表示一个半开半闭区间 [start, end)
  */
-typedef struct span
-{
+typedef struct span {
   size_t start;
   size_t end;
 } span_t;
@@ -17,9 +16,7 @@ typedef struct span
  * @note 如果 start > end, 结果会是一个空范围 (start ==
  * end)。
  */
-static inline span_t
-range(size_t start, size_t end)
-{
+static inline span_t range(size_t start, size_t end) {
   return (span_t){.start = start, .end = (start > end ? start : end)};
 }
 
@@ -27,9 +24,7 @@ range(size_t start, size_t end)
  * @brief (构造函数) 从 [start, start + len) 范围创建一个 span
  * (这个在词法分析器 (Lexer) 中非常有用)
  */
-static inline span_t
-span_from_len(size_t start, size_t len)
-{
+static inline span_t span_from_len(size_t start, size_t len) {
   return (span_t){.start = start, .end = start + len};
 }
 
@@ -39,10 +34,8 @@ span_from_len(size_t start, size_t len)
  * (这个在解析器 (Parser) 中至关重要，
  * 例如 `(a + b)` 的 span = `span_merge(a.span, b.span)`)
  */
-static inline span_t
-span_merge(span_t a, span_t b)
-{
-  // (这里假设 b 在 a 之后，但我们可以做得更健壮)
+static inline span_t span_merge(span_t a, span_t b) {
+
   size_t start = (a.start < b.start) ? a.start : b.start;
   size_t end = (a.end > b.end) ? a.end : b.end;
   return (span_t){.start = start, .end = end};
@@ -51,11 +44,7 @@ span_merge(span_t a, span_t b)
 /**
  * @brief (辅助函数) 获取 span 的长度
  */
-static inline size_t
-span_len(span_t span)
-{
-  return span.end - span.start;
-}
+static inline size_t span_len(span_t span) { return span.end - span.start; }
 
 /**
  * @brief (宏) 遍历一个字面量范围 [start, end)
@@ -65,7 +54,8 @@ span_len(span_t span)
  * dbg("i = %zu", i);
  * }
  */
-#define for_range(var, start, end) for (size_t var = (start); var < (end); var++)
+#define for_range(var, start, end)                                             \
+  for (size_t var = (start); var < (end); var++)
 
 /**
  * @brief (宏) 遍历一个 span_t 结构体
@@ -76,5 +66,5 @@ span_len(span_t span)
  * dbg("i = %zu", i);
  * }
  */
-#define for_range_in(var, range_obj) \
+#define for_range_in(var, range_obj)                                           \
   for (size_t var = (range_obj).start; var < (range_obj).end; var++)
