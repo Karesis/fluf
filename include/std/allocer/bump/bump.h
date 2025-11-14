@@ -63,7 +63,7 @@ bump_t *bump_new(void);
 
 /**
  * @brief 初始化一个已分配的 bump_t 结构 (例如在栈上)。
- * * @param bump 指向要初始化的 bump_t 实例的指针。
+ * @param bump 指向要初始化的 bump_t 实例的指针。
  * @param min_align 最小对齐。
  */
 void bump_init_with_min_align(bump_t *bump, size_t min_align);
