@@ -9,17 +9,13 @@
 /**
  * @brief (核心) 复制一个 C-string 到分配器中。
  *
- * 这是一个安全的 "strdup" 版本，它使用 fluf 的分配器。
- * 它分配 (strlen(cstr) + 1) 字节，复制字符串，
- * 并返回一个指向*新*内存的指针。
+ * (fluf 版本的 strdup)
  *
- * 这是解决 `string_t` 悬垂指针陷阱的首选方案。
- *
- * @param alc 用于分配新字符串的分配器。
  * @param cstr 要复制的、以 '\0' 结尾的字符串。
+ * @param alc 用于分配新字符串的分配器。
  * @return 一个指向新副本的 `char*`，或 OOM 时返回 NULL。
  */
-static inline char *allocer_strdup(allocer_t *alc, const char *cstr) {
+static inline char *cstr_dup(const char *cstr, allocer_t *alc) {
   asrt_msg(alc != NULL, "Allocator cannot be NULL");
   if (cstr == NULL) {
     return NULL;
@@ -33,7 +29,6 @@ static inline char *allocer_strdup(allocer_t *alc, const char *cstr) {
     return NULL; // OOM
   }
 
-  // +1 复制 \0
-  memcpy(new_str, cstr, len + 1);
+  memcpy(new_str, cstr, len + 1); // +1 复制 \0
   return new_str;
 }
