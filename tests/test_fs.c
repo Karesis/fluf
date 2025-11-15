@@ -79,6 +79,7 @@ static void test_path_join(void) {
 // `dir_walk` 的回调函数
 static void dir_walk_test_cb(const char *full_path, dir_entry_type_t type,
                              void *userdata) {
+  (void)type;
   vec_t *results = (vec_t *)userdata;
   // (我们*知道* full_path 是在 Arena 上的，所以我们可以安全地 push)
   vec_push(results, (void *)full_path);
