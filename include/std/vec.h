@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,6 +51,33 @@ bool vec_init(vec_t *vec, allocer_t *alc, size_t initial_capacity);
  * 它*不会*释放存储在 vector 中的 `void*` 指针。
  */
 void vec_destroy(vec_t *vec);
+
+/**
+ * @brief (新增) 在分配器上创建一个新的 vector。
+ *
+ * 这会从 `alc` 为 `vec_t` 结构体*本身*分配内存。
+ * `vec_t` 的生命周期现在与 `alc` (例如 Arena) 绑定。
+ *
+ * @param alc 用于分配 vector 结构体 *和* 其内部数组的分配器。
+ * @param initial_capacity 初始容量。
+ * @return 指向 Arena 上的 `vec_t` 的指针，或 OOM 时返回 NULL。
+ */
+static inline vec_t *vec_new(allocer_t *alc, size_t initial_capacity) {
+  // 1. 在 Arena 上为 vec_t 结构体分配内存
+  vec_t *vec = (vec_t *)allocer_alloc(alc, layout_of(vec_t));
+  if (vec == NULL) {
+    return NULL; // OOM
+  }
+
+  // 2. 调用 _init 来初始化它
+  if (!vec_init(vec, alc, initial_capacity)) {
+    // (如果 _init 失败, OOM, 我们不需要释放 vec,
+    // 因为它已经在 Arena 上了，Arena 会统一清理)
+    return NULL;
+  }
+
+  return vec;
+}
 
 /**
  * @brief 将一个指针追加到 vector 末尾。

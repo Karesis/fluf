@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,6 +45,34 @@ bool bitset_init(bitset_t *bs, size_t num_bits, allocer_t *alc);
  * @brief 初始化一个新的、所有位都为 1 的位集 (全集)
  */
 bool bitset_init_all(bitset_t *bs, size_t num_bits, allocer_t *alc);
+
+/**
+ * @brief 在分配器上创建一个新的、全 0 的位集。
+ */
+static inline bitset_t *bitset_new(size_t num_bits, allocer_t *alc) {
+  bitset_t *bs = (bitset_t *)allocer_alloc(alc, layout_of(bitset_t));
+  if (bs == NULL) {
+    return NULL; // OOM
+  }
+  if (!bitset_init(bs, num_bits, alc)) {
+    return NULL; // OOM
+  }
+  return bs;
+}
+
+/**
+ * @brief 在分配器上创建一个新的、全 1 的位集。
+ */
+static inline bitset_t *bitset_new_all(size_t num_bits, allocer_t *alc) {
+  bitset_t *bs = (bitset_t *)allocer_alloc(alc, layout_of(bitset_t));
+  if (bs == NULL) {
+    return NULL; // OOM
+  }
+  if (!bitset_init_all(bs, num_bits, alc)) {
+    return NULL; // OOM
+  }
+  return bs;
+}
 
 /**
  * @brief 销毁位集的内部存储 (words 数组)

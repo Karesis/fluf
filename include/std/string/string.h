@@ -52,6 +52,31 @@ bool string_init(string_t *s, allocer_t *alc, size_t initial_capacity);
 void string_destroy(string_t *s);
 
 /**
+ * @brief 在分配器上创建一个新的 string。
+ *
+ * 这会从 `alc` 为 `string_t` 结构体*本身*分配内存。
+ * `string_t` 的生命周期现在与 `alc` (例如 Arena) 绑定。
+ *
+ * @param alc 分配器。
+ * @param initial_capacity 初始容量。
+ * @return 指向 Arena 上的 `string_t` 的指针，或 OOM 时返回 NULL。
+ */
+static inline string_t *string_new(allocer_t *alc, size_t initial_capacity) {
+  // 1. 在 Arena 上为 string_t 结构体分配内存
+  string_t *s = (string_t *)allocer_alloc(alc, layout_of(string_t));
+  if (s == NULL) {
+    return NULL; // OOM
+  }
+
+  // 2. 调用 _init 来初始化它
+  if (!string_init(s, alc, initial_capacity)) {
+    return NULL; // OOM
+  }
+
+  return s;
+}
+
+/**
  * @brief 将一个字符 (char) 追加到字符串末尾。
  *
  * @param s string 实例。
