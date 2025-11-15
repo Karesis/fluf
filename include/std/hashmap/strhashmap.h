@@ -110,3 +110,37 @@ void strhashmap_clear(strhashmap_t *map);
  * @brief 获取哈希表中的条目数。
  */
 size_t strhashmap_count(const strhashmap_t *map);
+
+/**
+ * @brief 字符串哈希表迭代器
+ *
+ * 用于遍历哈希表中的所有有效条目 (跳过空槽和墓碑)。
+ * (在栈上初始化)
+ */
+typedef struct strhashmap_iter {
+  const strhashmap_t *map; // 只读引用
+  size_t index;            // 当前遍历到的内部数组索引
+} strhashmap_iter_t;
+
+/**
+ * @brief 初始化迭代器。
+ *
+ * @param iter 指向栈上迭代器的指针。
+ * @param map 要遍历的哈希表。
+ */
+void strhashmap_iter_init(strhashmap_iter_t *iter, const strhashmap_t *map);
+
+/**
+ * @brief 获取下一个条目。
+ *
+ * @param iter 迭代器实例。
+ * @param out_key [out] 写入当前条目的 Key (如果不需要可传 NULL)。
+ * @param out_value [out] 写入当前条目的 Value (如果不需要可传 NULL)。
+ * @return true (还有更多条目，out_key/out_value 已更新)。
+ * @return false (遍历结束)。
+ *
+ * @note 在遍历过程中，**不要**向哈希表中添加或删除元素 (realloc 会导致灾难)。
+ * 修改 value 指向的内容是安全的。
+ */
+bool strhashmap_iter_next(strhashmap_iter_t *iter, const char **out_key,
+                          void **out_value);

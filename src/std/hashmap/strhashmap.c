@@ -259,3 +259,38 @@ void strhashmap_clear(struct strhashmap *map) {
 }
 
 size_t strhashmap_count(const struct strhashmap *map) { return map->count; }
+
+void strhashmap_iter_init(strhashmap_iter_t *iter, const strhashmap_t *map) {
+  asrt_msg(iter != NULL, "Iterator cannot be NULL");
+  asrt_msg(map != NULL, "Map cannot be NULL");
+
+  iter->map = map;
+  iter->index = 0;
+}
+
+bool strhashmap_iter_next(strhashmap_iter_t *iter, const char **out_key,
+                          void **out_value) {
+  const strhashmap_t *map = iter->map;
+
+  // 线性扫描，直到找到一个有效的条目或到达末尾
+  while (iter->index < map->capacity) {
+    char *key = map->entries[iter->index].key;
+    void *val = map->entries[iter->index].value;
+
+    // 准备下一次迭代
+    iter->index++;
+
+    // 检查有效性 (非空 且 非墓碑)
+    // 注意：我们需要访问内部的 TOMBSTONE 常量，或者检查指针值
+    // 在 strhashmap.c 内部，TOMBSTONE 是可见的 ((char*)1)
+    if (key != NULL && key != TOMBSTONE) {
+      if (out_key)
+        *out_key = key;
+      if (out_value)
+        *out_value = val;
+      return true; // 找到了!
+    }
+  }
+
+  return false; // 遍历结束
+}
