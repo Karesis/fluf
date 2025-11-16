@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -128,6 +128,26 @@ static size_t find_line_index(const vec_t *lines, size_t offset) {
     }
   }
   return line_index;
+}
+/**
+ * @brief 获取一个文件在全局偏移量中的起始点。
+ */
+bool sourcemap_get_file_base_offset(const sourcemap_t *map, size_t file_id,
+                                    size_t *out_offset) {
+  // 1. (安全检查) file_id 是否在 vec_t 的范围内
+  if (file_id >= vec_count(&map->files)) {
+    return false;
+  }
+
+  // 2. 获取私有的 SourceFile*
+  SourceFile *file = (SourceFile *)vec_get(&map->files, file_id);
+  if (file == NULL) {
+    return false; // (理论上不应该发生)
+  }
+
+  // 3. 返回 base_offset
+  *out_offset = file->base_offset;
+  return true;
 }
 
 bool sourcemap_lookup(const sourcemap_t *map, size_t offset,
