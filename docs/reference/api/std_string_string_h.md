@@ -61,10 +61,10 @@
 
 ---
 
-## `bool string_append_slice(string_t *s, str_slice_t slice);`
+## `bool string_append_slice(string_t *s, strslice_t slice);`
 
 
-将一个字符串切片 (str_slice_t) 追加到字符串末尾。
+将一个字符串切片 (strslice_t) 追加到字符串末尾。
 
 
 - **`s`**: string 实例。
@@ -91,10 +91,10 @@
 
 ---
 
-## `str_slice_t string_as_slice(const string_t *s);`
+## `strslice_t string_as_slice(const string_t *s);`
 
 
-(O(1)) 将 string 作为 str_slice_t 返回。
+(O(1)) 将 string 作为 strslice_t 返回。
 
 
 ---

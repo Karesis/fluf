@@ -37,7 +37,7 @@ static void test_simple_lookup(void) {
   // 01234 5 67890 1 23456
   // line1 \n line2 \n line3
   const char *content = "line1\nline2\nline3";
-  str_slice_t slice = slice_from_cstr(content);
+  strslice_t slice = slice_from_cstr(content);
 
   size_t file_id = sourcemap_add_file(&map, "test.nyan", slice);
   asrt_msg(file_id == 0, "FileID should be 0");

@@ -131,7 +131,7 @@ bool string_append_cstr(string_t *s, const char *cstr) {
   return true;
 }
 
-bool string_append_slice(string_t *s, str_slice_t slice) {
+bool string_append_slice(string_t *s, strslice_t slice) {
   if (slice.len == 0)
     return true;
 
@@ -212,8 +212,8 @@ void string_clear(string_t *s) {
 
 const char *string_as_cstr(const string_t *s) { return s->data; }
 
-str_slice_t string_as_slice(const string_t *s) {
-  return (str_slice_t){.ptr = s->data, .len = s->count};
+strslice_t string_as_slice(const string_t *s) {
+  return (strslice_t){.ptr = s->data, .len = s->count};
 }
 
 size_t string_count(const string_t *s) { return s->count; }

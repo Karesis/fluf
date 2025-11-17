@@ -36,33 +36,33 @@
 
 ---
 
-## `static inline arg_type_t args_parser_peek(args_parser_t *p, str_slice_t *out_slice) {`
+## `static inline arg_type_t args_parser_peek(args_parser_t *p, strslice_t *out_slice) {`
 
 
 (内部) 检查下一个参数 *而不* 消耗它。
 
 
 - **`p`**: The parser.
-- **`out_slice`**: [out] 用于存储参数的 `str_slice_t` 视图。
+- **`out_slice`**: [out] 用于存储参数的 `strslice_t` 视图。
 - **Returns**: The type of the argument (FLAG, POSITIONAL, or END).
 
 
 ---
 
-## `static inline arg_type_t args_parser_consume(args_parser_t *p, str_slice_t *out_slice) {`
+## `static inline arg_type_t args_parser_consume(args_parser_t *p, strslice_t *out_slice) {`
 
 
 消耗并返回下一个参数。
 
 
 - **`p`**: The parser.
-- **`out_slice`**: [out] 用于存储参数的 `str_slice_t` 视图。
+- **`out_slice`**: [out] 用于存储参数的 `strslice_t` 视图。
 - **Returns**: The type of the argument (FLAG, POSITIONAL, or END).
 
 
 ---
 
-## `static inline bool args_parser_consume_value(args_parser_t *p, const char *option_name, str_slice_t *out_value) {`
+## `static inline bool args_parser_consume_value(args_parser_t *p, const char *option_name, strslice_t *out_value) {`
 
 
 (便捷函数) 消耗下一个参数，并期望它是一个值。

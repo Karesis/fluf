@@ -1,6 +1,6 @@
 #pragma once
 
-#include <std/string/str_slice.h> // 依赖 str_slice_t
+#include <std/string/str_slice.h> // 依赖 strslice_t
 #include <std/string/string.h>    // 依赖 string_t
 #include <stdbool.h>
 
@@ -25,8 +25,8 @@
  * @param part 要附加的部分。
  * @return true (成功) 或 false (OOM)。
  */
-static inline bool path_join(string_t *builder, str_slice_t base,
-                             str_slice_t part) {
+static inline bool path_join(string_t *builder, strslice_t base,
+                             strslice_t part) {
   // 1. 修剪 base 末尾的 '/'
   if (base.len > 0 && base.ptr[base.len - 1] == FLUF_PATH_SEPARATOR) {
     base.len--;
@@ -70,7 +70,7 @@ static inline bool path_join(string_t *builder, str_slice_t base,
  * @param path 完整路径。
  * @return 一个包含扩展名（包括 '.'）的切片，或一个空切片。
  */
-static inline str_slice_t path_get_extension(str_slice_t path) {
+static inline strslice_t path_get_extension(strslice_t path) {
   // 从末尾开始查找 '.'
   for (size_t i = path.len; i > 0; i--) {
     if (path.ptr[i - 1] == '.') {
@@ -79,7 +79,7 @@ static inline str_slice_t path_get_extension(str_slice_t path) {
         continue;
       }
       // 找到了!
-      return (str_slice_t){.ptr = path.ptr + i - 1, .len = path.len - (i - 1)};
+      return (strslice_t){.ptr = path.ptr + i - 1, .len = path.len - (i - 1)};
     }
     if (path.ptr[i - 1] == FLUF_PATH_SEPARATOR) {
       // 遇到了路径分隔符，停止
@@ -88,5 +88,5 @@ static inline str_slice_t path_get_extension(str_slice_t path) {
   }
 
   // 未找到
-  return (str_slice_t){.ptr = path.ptr + path.len, .len = 0};
+  return (strslice_t){.ptr = path.ptr + path.len, .len = 0};
 }

@@ -10,7 +10,7 @@
 
   * **`allocer_t` v-table 和 `bump_t`**：这是 `fluf` 的“杀手级功能”。你在 `main` 函数中创建单一的 arena，然后把 `alc` 传递给所有模块，最后在 `main` 退出时一次性销毁所有内存。这个模型**完美无瑕**，它消除了所有 `free()` 的心智负担。
   * **`vec_t` (`Vec<void*>`):** “具体而非泛型”的哲学在这里体现得淋漓尽致。我们用它来存储 `doc_entry_t*`、`const char*`（用于 targets 和 exclusions），它简单、快速、可预测。
-  * **`string_t` vs `str_slice_t`**：这个分离非常棒。`read_file_to_slice` 返回一个 `slice` 视图（零拷贝），而 `string_t` 作为 builder（在 `clean.c` 的状态机和 `doc.c` 的 Markdown 生成中）也很好用。
+  * **`string_t` vs `strslice_t`**：这个分离非常棒。`read_file_to_slice` 返回一个 `slice` 视图（零拷贝），而 `string_t` 作为 builder（在 `clean.c` 的状态机和 `doc.c` 的 Markdown 生成中）也很好用。
   * **API 的一致性**：所有 `fluf` 对象都遵循 `_init()` / `_destroy()` / `allocer_t*` 的模式，这让学习和使用变得非常容易。
 
 -----
@@ -38,7 +38,7 @@
           * `slice_starts_with_lit`
           * `string_append_compact_slice` (用于压缩 C 语言签名中的换行符)
           * `format_comment` (本质上是一个 `split_lines` 循环)
-      * **反馈：** 这些是构建编译器或工具时**最常用**的函数。`fluf` 提供了 `string_t` (builder) 和 `str_slice_t` (view)，但没有提供操作它们的“动词”（verbs）
+      * **反馈：** 这些是构建编译器或工具时**最常用**的函数。`fluf` 提供了 `string_t` (builder) 和 `strslice_t` (view)，但没有提供操作它们的“动词”（verbs）
 
 3.  **缺失的格式化 (`string_push_fmt`)**
 
@@ -75,10 +75,10 @@
 
       * **理由：** 让我们能真正地 *处理* 字符串，而不只是 *存储* 它们。
       * **Wishlist:**
-          * `str_slice_t slice_trim(str_slice_t s)` (修剪两端)
-          * `bool slice_starts_with(str_slice_t s, str_slice_t prefix)`
+          * `strslice_t slice_trim(strslice_t s)` (修剪两端)
+          * `bool slice_starts_with(strslice_t s, strslice_t prefix)`
           * `bool slice_ends_with(...)`
-          * `str_slice_t slice_split_next(str_slice_t* s, char delim)` (用于实现 `split_lines`)
+          * `strslice_t slice_split_next(strslice_t* s, char delim)` (用于实现 `split_lines`)
 
 3.  **`std/string/string.h` (改进)**
 
@@ -91,5 +91,5 @@
 
       * **理由：** 这是 `fluf` 作为“系统工具包”最大的缺失。
       * **Wishlist:**
-          * **`std/fs/path.h`:** `bool path_join(string_t* builder, allocer_t* alc, str_slice_t p1, str_slice_t p2)`。这能自动处理 `//` bug。
+          * **`std/fs/path.h`:** `bool path_join(string_t* builder, allocer_t* alc, strslice_t p1, strslice_t p2)`。这能自动处理 `//` bug。
           * **`std/fs/dir.h`:** `dir_walk(allocer_t* alc, const char* path, dir_walk_callback_fn* cb, void* userdata)`。一个基于 Arena 的、安全的目录遍历器，这样我们就不用在 `cnote` 的三个模块里重复写 `dirent.h` 逻辑了。

@@ -26,7 +26,7 @@
  */
 typedef struct {
   const char *filename;
-  str_slice_t content;
+  strslice_t content;
   vec_t line_starts;
   size_t base_offset;
   size_t length;
@@ -64,7 +64,7 @@ void sourcemap_destroy(sourcemap_t *map) {
 }
 
 size_t sourcemap_add_file(sourcemap_t *map, const char *filename,
-                          str_slice_t slice) {
+                          strslice_t slice) {
 
   SourceFile *file = allocer_alloc(map->alc, layout_of(SourceFile));
   if (!file)

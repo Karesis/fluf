@@ -1,6 +1,6 @@
 # std/io/file.h
 
-## `bool read_file_to_slice(allocer_t *alc, const char *path, str_slice_t *out_slice);`
+## `bool read_file_to_slice(allocer_t *alc, const char *path, strslice_t *out_slice);`
 
 
 (核心) 将整个文件读入由分配器管理的内存中。

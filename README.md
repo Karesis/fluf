@@ -35,9 +35,9 @@ The philosophy of fluf is:
 
   * **Memory (`std/allocer/bump/bump.h`)**: A high-performance, multi-chunk **Bump (Arena) Allocator** (`bump_t`).
   * **Strings**
-      * **`std/string/str_slice.h`**: A `str_slice_t` (`{ ptr, len }`) view, the C-equivalent of `StringView` or `&str`.
+      * **`std/string/str_slice.h`**: A `strslice_t` (`{ ptr, len }`) view, the C-equivalent of `StringView` or `&str`.
       * **`std/string/string.h`**: A `string_t` dynamic string builder (like `Vec<char>`), guaranteeing a `\0` terminator.
-      * **`std/string/strintern.h`**: A `strintern_t` **String Interner**. The core of a compiler's lexer; it de-duplicates strings, turning `str_slice_t` inputs into unique `const char*` outputs.
+      * **`std/string/strintern.h`**: A `strintern_t` **String Interner**. The core of a compiler's lexer; it de-duplicates strings, turning `strslice_t` inputs into unique `const char*` outputs.
   * **Containers**
       * **`std/vec.h`**: A `vec_t` dynamic array, optimized for storing `void*`.
       * **`std/hashmap/strhashmap.h`**: A `strhashmap_t`, an open-addressing, linear-probing hash map for `const char*` -\> `void*`.
@@ -83,7 +83,7 @@ int main(void) {
     strintern_init(&interner, &alc, 0);
 
     // 4. Simulate lexing: we find a token "foo"
-    str_slice_t token_slice = SLICE_LITERAL("foo");
+    strslice_t token_slice = SLICE_LITERAL("foo");
 
     // 5. Intern the token
     // `token1` is now a unique, \0-terminated `const char*`

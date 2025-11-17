@@ -35,30 +35,30 @@
 typedef struct str_slice {
   const char *ptr;
   size_t len;
-} str_slice_t;
+} strslice_t;
 
 /**
  * @brief (辅助宏) 从 C 字符串字面量创建切片
  *
- * 示例: str_slice_t s = SLICE_LITERAL("hello");
+ * 示例: strslice_t s = SLICE_LITERAL("hello");
  * (s.ptr = "hello", s.len = 5)
  * * sizeof("hello") == 6 (包含 \0)
  */
-#define SLICE_LITERAL(s) ((str_slice_t){.ptr = (s), .len = sizeof(s) - 1})
+#define SLICE_LITERAL(s) ((strslice_t){.ptr = (s), .len = sizeof(s) - 1})
 
 /**
  * @brief (辅助函数) 从 C 字符串 (const char*) 创建切片
  * * 这是一个 O(n) 操作，因为它调用了 strlen。
  */
-static inline str_slice_t slice_from_cstr(const char *cstr) {
+static inline strslice_t slice_from_cstr(const char *cstr) {
   asrt_msg(cstr != NULL, "Cannot create slice from NULL c-string");
-  return (str_slice_t){.ptr = cstr, .len = strlen(cstr)};
+  return (strslice_t){.ptr = cstr, .len = strlen(cstr)};
 }
 
 /**
  * @brief (辅助函数) 比较两个切片是否相等 (O(n))
  */
-static inline bool slice_equals(str_slice_t a, str_slice_t b) {
+static inline bool slice_equals(strslice_t a, strslice_t b) {
   if (a.len != b.len) {
     return false;
   }
@@ -69,7 +69,7 @@ static inline bool slice_equals(str_slice_t a, str_slice_t b) {
 /**
  * @brief (辅助函数) 比较切片和一个 C 字符串是否相等 (O(n))
  */
-static inline bool slice_equals_cstr(str_slice_t a, const char *b_cstr) {
+static inline bool slice_equals_cstr(strslice_t a, const char *b_cstr) {
   // strncmp 在这里是安全的，因为 b_cstr 保证以 \0 结尾
   size_t b_len = strlen(b_cstr);
   if (a.len != b_len) {
@@ -81,7 +81,7 @@ static inline bool slice_equals_cstr(str_slice_t a, const char *b_cstr) {
 /**
  * @brief (辅助函数) 检查切片是否以指定前缀 (slice) 开头
  */
-static inline bool slice_starts_with(str_slice_t s, str_slice_t prefix) {
+static inline bool slice_starts_with(strslice_t s, strslice_t prefix) {
   if (s.len < prefix.len) {
     return false;
   }
@@ -91,7 +91,7 @@ static inline bool slice_starts_with(str_slice_t s, str_slice_t prefix) {
 /**
  * @brief (辅助函数) 检查切片是否以指定前缀 (C-string) 开头
  */
-static inline bool slice_starts_with_cstr(str_slice_t s,
+static inline bool slice_starts_with_cstr(strslice_t s,
                                           const char *prefix_cstr) {
   size_t prefix_len = strlen(prefix_cstr); // <-- 修复
   if (s.len < prefix_len) {
@@ -103,7 +103,7 @@ static inline bool slice_starts_with_cstr(str_slice_t s,
 /**
  * @brief (辅助函数) 检查切片是否以指定后缀 (slice) 结尾
  */
-static inline bool slice_ends_with(str_slice_t s, str_slice_t suffix) {
+static inline bool slice_ends_with(strslice_t s, strslice_t suffix) {
   if (s.len < suffix.len) {
     return false;
   }
@@ -113,8 +113,7 @@ static inline bool slice_ends_with(str_slice_t s, str_slice_t suffix) {
 /**
  * @brief (辅助函数) 检查切片是否以指定后缀 (C-string) 结尾
  */
-static inline bool slice_ends_with_cstr(str_slice_t s,
-                                        const char *suffix_cstr) {
+static inline bool slice_ends_with_cstr(strslice_t s, const char *suffix_cstr) {
   size_t suffix_len = strlen(suffix_cstr); // <-- 新增
   if (s.len < suffix_len) {
     return false;
@@ -130,29 +129,29 @@ static inline bool _slice_is_whitespace(char c) {
 /**
  * @brief 修剪切片左侧（开头）的空白符
  */
-static inline str_slice_t slice_trim_left(str_slice_t s) {
+static inline strslice_t slice_trim_left(strslice_t s) {
   size_t start = 0;
   while (start < s.len && _slice_is_whitespace(s.ptr[start])) {
     start++;
   }
-  return (str_slice_t){.ptr = s.ptr + start, .len = s.len - start};
+  return (strslice_t){.ptr = s.ptr + start, .len = s.len - start};
 }
 
 /**
  * @brief 修剪切片右侧（末尾）的空白符
  */
-static inline str_slice_t slice_trim_right(str_slice_t s) {
+static inline strslice_t slice_trim_right(strslice_t s) {
   size_t end = s.len;
   while (end > 0 && _slice_is_whitespace(s.ptr[end - 1])) {
     end--;
   }
-  return (str_slice_t){.ptr = s.ptr, .len = end};
+  return (strslice_t){.ptr = s.ptr, .len = end};
 }
 
 /**
  * @brief 修剪切片两端的空白符
  */
-static inline str_slice_t slice_trim(str_slice_t s) {
+static inline strslice_t slice_trim(strslice_t s) {
   return slice_trim_right(slice_trim_left(s));
 }
 
@@ -167,16 +166,16 @@ static inline str_slice_t slice_trim(str_slice_t s) {
  * @return true (如果找到了一个切片) 或 false (如果 `s_ptr` 已经是空的)。
  *
  * @example
- * str_slice_t s = SLICE_LITERAL("a,b,c");
- * str_slice_t token;
+ * strslice_t s = SLICE_LITERAL("a,b,c");
+ * strslice_t token;
  * while (slice_split_next(&s, ',', &token)) {
  * // 第一次: token = "a", s = "b,c"
  * // 第二次: token = "b", s = "c"
  * // 第三次: token = "c", s = ""
  * }
  */
-static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
-                                    str_slice_t *out_result) {
+static inline bool slice_split_next(strslice_t *s_ptr, char delim,
+                                    strslice_t *out_result) {
   if (s_ptr->len == 0 && s_ptr->ptr == NULL) {
     // (ptr == NULL 是一个哨兵，表示迭代已完成)
     return false;
@@ -190,7 +189,7 @@ static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
     size_t pos = (const char *)delim_ptr - s_ptr->ptr;
 
     // a. 设置结果
-    *out_result = (str_slice_t){.ptr = s_ptr->ptr, .len = pos};
+    *out_result = (strslice_t){.ptr = s_ptr->ptr, .len = pos};
 
     // b. 修改输入切片 (跳过分隔符)
     s_ptr->ptr += (pos + 1);
@@ -204,14 +203,14 @@ static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
     *out_result = *s_ptr;
 
     // b. 修改输入切片 (设置为空哨兵)
-    *s_ptr = (str_slice_t){.ptr = NULL, .len = 0};
+    *s_ptr = (strslice_t){.ptr = NULL, .len = 0};
 
     return true;
   }
 }
 
 /**
- * @brief (核心) 复制一个 `str_slice_t` 到分配器中。
+ * @brief (核心) 复制一个 `strslice_t` 到分配器中。
  *
  * (fluf 版本的 strndup)
  * 这将创建一个*新的*、以 '\0' 结尾的 C 字符串。
@@ -220,7 +219,7 @@ static inline bool slice_split_next(str_slice_t *s_ptr, char delim,
  * @param alc 用于分配新字符串的分配器。
  * @return 一个指向新副本的 `char*`，或 OOM 时返回 NULL。
  */
-static inline char *slice_dup(str_slice_t slice, allocer_t *alc) {
+static inline char *slice_dup(strslice_t slice, allocer_t *alc) {
   asrt_msg(alc != NULL, "Allocator cannot be NULL");
 
   // (len + 1) 用于 \0

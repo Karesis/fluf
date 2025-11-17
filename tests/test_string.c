@@ -25,7 +25,7 @@ static void check_str(const string_t *s, const char *expected) {
   asrt_msg(string_count(s) == expected_len, "String count mismatch");
 
   // 3. 验证 Slice
-  str_slice_t slice = string_as_slice(s);
+  strslice_t slice = string_as_slice(s);
   asrt_msg(slice.len == expected_len, "Slice length mismatch");
   asrt_msg(slice_equals_cstr(slice, expected), "Slice content mismatch");
 }
@@ -79,7 +79,7 @@ static void test_append(void) {
 
   // 2. Append Slice (非 \0 结尾)
   const char *source = " World! (extra)";
-  str_slice_t slice = {.ptr = source, .len = 7}; // " World!"
+  strslice_t slice = {.ptr = source, .len = 7}; // " World!"
 
   ok = string_append_slice(&s, slice);
   asrt_msg(ok, "append_slice failed");
@@ -129,7 +129,7 @@ static void test_growth(void) {
 
   // 5. 触发扩容 (append_slice)
   // (容量是 8, count 是 6, 剩余 2)
-  str_slice_t slice = SLICE_LITERAL("ghijkl"); // 需要 6, 触发扩容
+  strslice_t slice = SLICE_LITERAL("ghijkl"); // 需要 6, 触发扩容
   string_append_slice(&s, slice);
   check_str(&s, "abcdefghijkl");
   asrt_msg(s.capacity >= 12,

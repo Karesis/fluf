@@ -48,7 +48,7 @@
 
 ---
 
-## `size_t sourcemap_add_file(sourcemap_t *map, const char *filename, str_slice_t slice);`
+## `size_t sourcemap_add_file(sourcemap_t *map, const char *filename, strslice_t slice);`
 
 
 (核心) 向 sourcemap 添加一个源文件

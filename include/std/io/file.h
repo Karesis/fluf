@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@
  * @return true (成功) 或 false (文件无法打开, 或 OOM)。
  */
 bool read_file_to_slice(allocer_t *alc, const char *path,
-                        str_slice_t *out_slice);
+                        strslice_t *out_slice);
 
 /**
  * @brief 将一块内存写入文件。

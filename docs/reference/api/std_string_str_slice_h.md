@@ -14,19 +14,19 @@
 
 ---
 
-## `#define SLICE_LITERAL(s) ((str_slice_t){`
+## `#define SLICE_LITERAL(s) ((strslice_t){`
 
 
 (辅助宏) 从 C 字符串字面量创建切片
 
-示例: str_slice_t s = SLICE_LITERAL("hello");
+示例: strslice_t s = SLICE_LITERAL("hello");
 (s.ptr = "hello", s.len = 5)
 * sizeof("hello") == 6 (包含 \0)
 
 
 ---
 
-## `static inline str_slice_t slice_from_cstr(const char *cstr) {`
+## `static inline strslice_t slice_from_cstr(const char *cstr) {`
 
 
 (辅助函数) 从 C 字符串 (const char*) 创建切片
@@ -35,7 +35,7 @@
 
 ---
 
-## `static inline bool slice_equals(str_slice_t a, str_slice_t b) {`
+## `static inline bool slice_equals(strslice_t a, strslice_t b) {`
 
 
 (辅助函数) 比较两个切片是否相等 (O(n))
@@ -43,7 +43,7 @@
 
 ---
 
-## `static inline bool slice_equals_cstr(str_slice_t a, const char *b_cstr) {`
+## `static inline bool slice_equals_cstr(strslice_t a, const char *b_cstr) {`
 
 
 (辅助函数) 比较切片和一个 C 字符串是否相等 (O(n))

@@ -74,7 +74,7 @@ void sourcemap_destroy(sourcemap_t *map);
  * @return 一个 "FileID" (文件索引)，如果失败则返回 (size_t)-1
  */
 size_t sourcemap_add_file(sourcemap_t *map, const char *filename,
-                          str_slice_t slice);
+                          strslice_t slice);
 
 /**
  * @brief (核心) 将全局字节偏移量转换为 "行:列"

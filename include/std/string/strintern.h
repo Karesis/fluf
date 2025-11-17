@@ -25,7 +25,7 @@
  * @brief 字符串驻留器
  *
  * 这是一个 "string -> unique const char*" 的集合。
- * 它接收 `str_slice_t`，并返回一个唯一的、保证
+ * 它接收 `strslice_t`，并返回一个唯一的、保证
  * 以 '\0' 结尾的 `const char*`。
  */
 typedef struct strintern {
@@ -80,7 +80,7 @@ static inline strintern_t *strintern_new(allocer_t *alc,
  * @param slice 要驻留的切片 (不需要以 '\0' 结尾)。
  * @return 唯一的、持久化的 `const char*` 指针，或 OOM 时返回 NULL。
  */
-const char *strintern_intern_slice(strintern_t *interner, str_slice_t slice);
+const char *strintern_intern_slice(strintern_t *interner, strslice_t slice);
 
 /**
  * @brief (便捷函数) 驻留一个 C 字符串。

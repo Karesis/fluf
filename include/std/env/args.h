@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,11 +60,11 @@ static inline void args_parser_init(args_parser_t *p, int argc,
  * @brief (内部) 检查下一个参数 *而不* 消耗它。
  *
  * @param p The parser.
- * @param out_slice [out] 用于存储参数的 `str_slice_t` 视图。
+ * @param out_slice [out] 用于存储参数的 `strslice_t` 视图。
  * @return The type of the argument (FLAG, POSITIONAL, or END).
  */
 static inline arg_type_t args_parser_peek(args_parser_t *p,
-                                          str_slice_t *out_slice) {
+                                          strslice_t *out_slice) {
   if (p->index >= p->argc) {
     return ARG_TYPE_END;
   }
@@ -91,11 +91,11 @@ static inline arg_type_t args_parser_peek(args_parser_t *p,
  * @brief 消耗并返回下一个参数。
  *
  * @param p The parser.
- * @param out_slice [out] 用于存储参数的 `str_slice_t` 视图。
+ * @param out_slice [out] 用于存储参数的 `strslice_t` 视图。
  * @return The type of the argument (FLAG, POSITIONAL, or END).
  */
 static inline arg_type_t args_parser_consume(args_parser_t *p,
-                                             str_slice_t *out_slice) {
+                                             strslice_t *out_slice) {
   arg_type_t type = args_parser_peek(p, out_slice);
 
   if (type == ARG_TYPE_END) {
@@ -121,7 +121,7 @@ static inline arg_type_t args_parser_consume(args_parser_t *p,
  */
 static inline bool args_parser_consume_value(args_parser_t *p,
                                              const char *option_name,
-                                             str_slice_t *out_value) {
+                                             strslice_t *out_value) {
   arg_type_t type = args_parser_consume(p, out_value);
 
   if (type != ARG_TYPE_POSITIONAL) {

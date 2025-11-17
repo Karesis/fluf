@@ -2,13 +2,13 @@
 #include <string.h>
 
 // --- Fluf 依赖 ---
+#include <assert.h>
+#include <core/mem/allocer.h> // 你的路径
 #include <core/msg/asrt.h>
-#include <core/mem/allocer.h>      // 你的路径
-#include <std/string/str_slice.h>  // 你的路径
+#include <core/msg/dbg.h>
 #include <std/allocer/bump/bump.h> // 你的路径
 #include <std/allocer/bump/glue.h> // 你的路径
-#include <core/msg/dbg.h>
-#include <assert.h>
+#include <std/string/str_slice.h>  // 你的路径
 
 // --- 我们要测试的模块 ---
 #include <std/string/strintern.h>
@@ -16,9 +16,7 @@
 /**
  * 测试 1：基本 C-String 驻留
  */
-static void
-test_intern_cstr(void)
-{
+static void test_intern_cstr(void) {
   printf("--- Test: test_intern_cstr ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -45,9 +43,7 @@ test_intern_cstr(void)
 /**
  * 测试 2：指针恒等性 (Uniqueness)
  */
-static void
-test_intern_uniqueness(void)
-{
+static void test_intern_uniqueness(void) {
   printf("--- Test: test_intern_uniqueness ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -62,15 +58,17 @@ test_intern_uniqueness(void)
   const char *s2 = strintern_intern_cstr(&interner, "unique");
 
   asrt_msg(s1 == s2, "Pointers MUST be identical for C-String (s1 == s2)");
-  asrt_msg(strintern_count(&interner) == 1, "Count should be 1 after duplicate C-String");
+  asrt_msg(strintern_count(&interner) == 1,
+           "Count should be 1 after duplicate C-String");
 
   // 2. 测试 Slice
-  str_slice_t slice = SLICE_LITERAL("slice");
+  strslice_t slice = SLICE_LITERAL("slice");
   const char *s3 = strintern_intern_slice(&interner, slice);
   const char *s4 = strintern_intern_slice(&interner, slice);
 
   asrt_msg(s3 == s4, "Pointers MUST be identical for slice (s3 == s4)");
-  asrt_msg(strintern_count(&interner) == 2, "Count should be 2 after new slice");
+  asrt_msg(strintern_count(&interner) == 2,
+           "Count should be 2 after new slice");
 
   // 3. 测试混合 (C-String vs Slice)
   const char *s5 = strintern_intern_cstr(&interner, "slice");
@@ -84,9 +82,7 @@ test_intern_uniqueness(void)
 /**
  * 测试 3：非 \0 结尾的切片 (词法分析器模拟)
  */
-static void
-test_intern_non_null_terminated(void)
-{
+static void test_intern_non_null_terminated(void) {
   printf("--- Test: test_intern_non_null_terminated ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -98,17 +94,19 @@ test_intern_non_null_terminated(void)
 
   const char *source_text = "let x = 10;let"; // 源代码
 
-  str_slice_t s_let = {.ptr = &source_text[0], .len = 3};
-  str_slice_t s_x = {.ptr = &source_text[4], .len = 1};
+  strslice_t s_let = {.ptr = &source_text[0], .len = 3};
+  strslice_t s_x = {.ptr = &source_text[4], .len = 1};
 
   const char *c_let = strintern_intern_slice(&interner, s_let);
   const char *c_x = strintern_intern_slice(&interner, s_x);
 
   asrt_msg(c_let != s_let.ptr, "Pointer MUST be a copy, not the original");
-  asrt_msg(strcmp(c_let, "let") == 0, "Returned string 'let' failed strcmp (bad \\0)");
+  asrt_msg(strcmp(c_let, "let") == 0,
+           "Returned string 'let' failed strcmp (bad \\0)");
 
   asrt_msg(c_x != s_x.ptr, "Pointer 'x' MUST be a copy");
-  asrt_msg(strcmp(c_x, "x") == 0, "Returned string 'x' failed strcmp (bad \\0)");
+  asrt_msg(strcmp(c_x, "x") == 0,
+           "Returned string 'x' failed strcmp (bad \\0)");
 
   asrt_msg(strintern_count(&interner) == 2, "Count should be 2");
 
@@ -122,9 +120,7 @@ test_intern_non_null_terminated(void)
 /**
  * 测试 4：扩容 (Growth / Resize)
  */
-static void
-test_intern_growth(void)
-{
+static void test_intern_growth(void) {
   printf("--- Test: test_intern_growth ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -159,9 +155,7 @@ test_intern_growth(void)
 /**
  * 测试 5：`clear` (编译器循环模拟)
  */
-static void
-test_intern_clear(void)
-{
+static void test_intern_clear(void) {
   printf("--- Test: test_intern_clear ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -186,7 +180,8 @@ test_intern_clear(void)
   const char *s2 = strintern_intern_cstr(&interner, "foo");
 
   // (移除了调试用的 printf/dbg/assert)
-  asrt_msg(strintern_count(&interner) == 1, "Count should be 1 after re-intern");
+  asrt_msg(strintern_count(&interner) == 1,
+           "Count should be 1 after re-intern");
 
   // 4. 关键：s1 的内存已被回收，s2 是一个 *新* 指针
   asrt_msg(s1 != s2, "Pointers MUST be different after arena reset");
@@ -199,10 +194,10 @@ test_intern_clear(void)
 /**
  * 测试运行器 (Test Runner)
  */
-int main(void)
-{
+int main(void) {
 #ifdef NDEBUG
-  fprintf(stderr, "Error: Cannot run tests with NDEBUG defined. Recompile in Debug mode.\n");
+  fprintf(stderr, "Error: Cannot run tests with NDEBUG defined. Recompile in "
+                  "Debug mode.\n");
   return 1;
 #endif
 

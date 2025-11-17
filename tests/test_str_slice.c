@@ -13,11 +13,11 @@
 static void test_construct_and_compare(void) {
   printf("--- Test: test_construct_and_compare ---\n");
 
-  str_slice_t s1 = SLICE_LITERAL("hello");
+  strslice_t s1 = SLICE_LITERAL("hello");
   asrt_msg(s1.len == 5, "SLICE_LITERAL len failed");
-  str_slice_t s2 = slice_from_cstr("hello");
+  strslice_t s2 = slice_from_cstr("hello");
   asrt_msg(s2.len == 5, "slice_from_cstr len failed");
-  str_slice_t s3 = SLICE_LITERAL("world");
+  strslice_t s3 = SLICE_LITERAL("world");
 
   // 比较
   asrt_msg(slice_equals(s1, s2), "slice_equals failed");
@@ -37,7 +37,7 @@ static void test_construct_and_compare(void) {
 static void test_prefix_suffix(void) {
   printf("--- Test: test_prefix_suffix ---\n");
 
-  str_slice_t s = SLICE_LITERAL("hello_world");
+  strslice_t s = SLICE_LITERAL("hello_world");
 
   // 1. 前缀 (Starts With)
   asrt_msg(slice_starts_with(s, SLICE_LITERAL("hello")),
@@ -66,30 +66,30 @@ static void test_prefix_suffix(void) {
 static void test_trim(void) {
   printf("--- Test: test_trim ---\n");
 
-  str_slice_t s1 = SLICE_LITERAL(" \t \n hello world \r \n ");
-  str_slice_t t1 = slice_trim(s1);
+  strslice_t s1 = SLICE_LITERAL(" \t \n hello world \r \n ");
+  strslice_t t1 = slice_trim(s1);
   asrt_msg(slice_equals_cstr(t1, "hello world"),
            "slice_trim failed"); // <-- 改用 _cstr
 
-  str_slice_t s2 = SLICE_LITERAL("  hello");
-  str_slice_t t2 = slice_trim(s2);
+  strslice_t s2 = SLICE_LITERAL("  hello");
+  strslice_t t2 = slice_trim(s2);
   asrt_msg(slice_equals_cstr(t2, "hello"), "slice_trim (left) failed");
 
-  str_slice_t s3 = SLICE_LITERAL("hello  ");
-  str_slice_t t3 = slice_trim(s3);
+  strslice_t s3 = SLICE_LITERAL("hello  ");
+  strslice_t t3 = slice_trim(s3);
   asrt_msg(slice_equals_cstr(t3, "hello"), "slice_trim (right) failed");
 
-  str_slice_t s4 = SLICE_LITERAL("hello");
-  str_slice_t t4 = slice_trim(s4);
+  strslice_t s4 = SLICE_LITERAL("hello");
+  strslice_t t4 = slice_trim(s4);
   asrt_msg(slice_equals_cstr(t4, "hello"), "slice_trim (no-op) failed");
   asrt_msg(t4.ptr == s4.ptr, "slice_trim (no-op) should not change ptr");
 
-  str_slice_t s5 = SLICE_LITERAL(" \t \n ");
-  str_slice_t t5 = slice_trim(s5);
+  strslice_t s5 = SLICE_LITERAL(" \t \n ");
+  strslice_t t5 = slice_trim(s5);
   asrt_msg(t5.len == 0, "slice_trim (all whitespace) len failed");
 
-  str_slice_t s6 = SLICE_LITERAL("");
-  str_slice_t t6 = slice_trim(s6);
+  strslice_t s6 = SLICE_LITERAL("");
+  strslice_t t6 = slice_trim(s6);
   asrt_msg(t6.len == 0, "slice_trim (empty) len failed");
 }
 
@@ -98,7 +98,7 @@ static void test_trim(void) {
  */
 static void test_split(void) {
   printf("--- Test: test_split ---\n");
-  str_slice_t s, token;
+  strslice_t s, token;
   bool ok;
 
   s = SLICE_LITERAL("a,b,c");

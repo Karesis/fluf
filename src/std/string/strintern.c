@@ -1,12 +1,12 @@
 /*
  *    Copyright 2025 Karesis
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@
 
 static const char *TOMBSTONE = (const char *)1;
 
-static uint64_t hash_slice(str_slice_t slice) {
+static uint64_t hash_slice(strslice_t slice) {
   uint64_t hash = 5381;
   for_range(i, 0, slice.len) { hash = ((hash << 5) + hash) + slice.ptr[i]; }
   return hash;
@@ -43,7 +43,7 @@ static uint64_t hash_slice(str_slice_t slice) {
  * @return true (已找到) 或 false (未找到, out_index 是插入点)
  */
 static bool find_entry(const char **entries, size_t capacity,
-                       str_slice_t key_slice, size_t *out_index) {
+                       strslice_t key_slice, size_t *out_index) {
   uint64_t hash = hash_slice(key_slice);
   size_t index = (size_t)(hash % (uint64_t)capacity);
   size_t first_tombstone = (size_t)-1;
@@ -102,7 +102,7 @@ static bool resize(strintern_t *interner) {
     const char *entry_key = old_entries[i];
     if (entry_key != NULL && entry_key != TOMBSTONE) {
 
-      str_slice_t key_slice = slice_from_cstr(entry_key);
+      strslice_t key_slice = slice_from_cstr(entry_key);
 
       size_t index;
       bool found = find_entry(new_entries, new_capacity, key_slice, &index);
@@ -151,7 +151,7 @@ void strintern_destroy(strintern_t *interner) {
   interner->count = 0;
 }
 
-const char *strintern_intern_slice(strintern_t *interner, str_slice_t slice) {
+const char *strintern_intern_slice(strintern_t *interner, strslice_t slice) {
 
   if (interner->count + 1 > interner->capacity * INTERN_MAX_LOAD_FACTOR) {
     if (!resize(interner))

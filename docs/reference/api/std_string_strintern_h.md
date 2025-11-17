@@ -6,7 +6,7 @@
 字符串驻留器
 
 这是一个 "string -> unique const char*" 的集合。
-它接收 `str_slice_t`，并返回一个唯一的、保证
+它接收 `strslice_t`，并返回一个唯一的、保证
 以 '\0' 结尾的 `const char*`。
 
 
@@ -37,7 +37,7 @@
 
 ---
 
-## `const char *strintern_intern_slice(strintern_t *interner, str_slice_t slice);`
+## `const char *strintern_intern_slice(strintern_t *interner, strslice_t slice);`
 
 
 驻留一个字符串切片。

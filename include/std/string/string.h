@@ -95,13 +95,13 @@ bool string_push(string_t *s, char c);
 bool string_append_cstr(string_t *s, const char *cstr);
 
 /**
- * @brief 将一个字符串切片 (str_slice_t) 追加到字符串末尾。
+ * @brief 将一个字符串切片 (strslice_t) 追加到字符串末尾。
  *
  * @param s string 实例。
  * @param slice 要追加的切片 (不要求 \0 结尾)。
  * @return true (成功) 或 false (OOM / 扩容失败)。
  */
-bool string_append_slice(string_t *s, str_slice_t slice);
+bool string_append_slice(string_t *s, strslice_t slice);
 
 /**
  * @brief 将 printf 风格的格式化字符串追加到末尾。
@@ -135,9 +135,9 @@ void string_clear(string_t *s);
 const char *string_as_cstr(const string_t *s);
 
 /**
- * @brief (O(1)) 将 string 作为 str_slice_t 返回。
+ * @brief (O(1)) 将 string 作为 strslice_t 返回。
  */
-str_slice_t string_as_slice(const string_t *s);
+strslice_t string_as_slice(const string_t *s);
 
 /**
  * @brief (O(1)) 获取字符串长度 (strlen)。
