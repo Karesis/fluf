@@ -23,7 +23,6 @@ static void test_construct_and_compare(void) {
   asrt_msg(slice_equals(s1, s2), "slice_equals failed");
   asrt_msg(!slice_equals(s1, s3), "slice_equals (negative) failed");
 
-  // 【【【 修复 】】】
   // 使用 slice_equals_cstr，这是正确的函数
   asrt_msg(slice_equals_cstr(s1, "hello"), "slice_equals_cstr failed");
   asrt_msg(!slice_equals_cstr(s1, "hell"), "slice_equals_cstr (len) failed");
