@@ -16,7 +16,7 @@
 
 #include <core/mem/layout.h>
 #include <core/msg/asrt.h>
-#include <std/io/sourcemap.h>
+#include <std/fs/sourcemap.h>
 #include <std/vec.h>
 #include <stdint.h>
 #include <string.h>
