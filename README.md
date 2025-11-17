@@ -57,7 +57,7 @@ This example demonstrates the core `fluf` philosophy: stack-based `_init`, an `a
 // --- fluf core ---
 #include <core/msg/asrt.h>
 #include <core/mem/allocer.h>
-#include <std/string/str_slice.h>
+#include <std/string/strslice.h>
 
 // --- fluf modules ---
 #include <std/allocer/bump/bump.h>

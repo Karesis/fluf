@@ -6,7 +6,7 @@
 #include <core/msg/asrt.h>
 #include <std/allocer/bump/bump.h> // 具体 Bump 实现
 #include <std/allocer/bump/glue.h> // "胶水" (bump -> allocer)
-#include <std/string/str_slice.h>  // 字符串切片
+#include <std/string/strslice.h>   // 字符串切片
 
 // --- 我们要测试的模块 ---
 #include <std/string/string.h> // 你的路径

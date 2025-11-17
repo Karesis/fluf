@@ -1,6 +1,6 @@
 #pragma once
 
-#include <std/string/str_slice.h>
+#include <std/string/strslice.h>
 #include <stdint.h>
 
 typedef struct utf8 {

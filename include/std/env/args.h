@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <std/string/str_slice.h>
+#include <std/string/strslice.h>
 #include <stdbool.h>
 #include <string.h>
 

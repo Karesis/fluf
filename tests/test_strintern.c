@@ -8,7 +8,7 @@
 #include <core/msg/dbg.h>
 #include <std/allocer/bump/bump.h> // 你的路径
 #include <std/allocer/bump/glue.h> // 你的路径
-#include <std/string/str_slice.h>  // 你的路径
+#include <std/string/strslice.h>   // 你的路径
 
 // --- 我们要测试的模块 ---
 #include <std/string/strintern.h>

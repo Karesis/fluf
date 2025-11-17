@@ -1,7 +1,7 @@
 #pragma once
 
-#include <std/string/str_slice.h> // 依赖 strslice_t
-#include <std/string/string.h>    // 依赖 string_t
+#include <std/string/string.h>   // 依赖 string_t
+#include <std/string/strslice.h> // 依赖 strslice_t
 #include <stdbool.h>
 
 // (在 C 语言中，我们只处理 POSIX 风格的 '/' 分隔符)

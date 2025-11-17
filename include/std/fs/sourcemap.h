@@ -18,7 +18,7 @@
 
 #include <core/mem/allocer.h>
 #include <core/span.h>
-#include <std/string/str_slice.h>
+#include <std/string/strslice.h>
 #include <std/vec.h>
 #include <stdbool.h>
 #include <stddef.h>

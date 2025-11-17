@@ -17,7 +17,7 @@
 #pragma once
 
 #include <core/mem/allocer.h>
-#include <std/string/str_slice.h>
+#include <std/string/strslice.h>
 #include <stdbool.h>
 
 /**

@@ -5,7 +5,7 @@
 #include <core/msg/asrt.h>
 
 // --- 我们要测试的模块 ---
-#include <std/string/str_slice.h> // 你的路径
+#include <std/string/strslice.h> // 你的路径
 
 /**
  * @brief 测试 1：构造函数和比较函数
