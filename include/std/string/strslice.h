@@ -32,7 +32,7 @@
  * 它的核心优势是 `len` 是 O(1) 的，并且它可以
  * "切片" (slice) 现有的内存（如源文件），而无需复制。
  */
-typedef struct str_slice {
+typedef struct strslice {
   const char *ptr;
   size_t len;
 } strslice_t;
