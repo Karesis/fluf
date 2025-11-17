@@ -2,21 +2,20 @@
 #include <string.h>
 
 // --- Fluf 依赖 ---
+#include <core/mem/allocer.h> // 抽象 Allocer
 #include <core/msg/asrt.h>
-#include <core/mem/allocer.h>      // 抽象 Allocer
+#include <core/span.h>             // 包含 span_t
 #include <std/allocer/bump/bump.h> // 具体 Bump 实现
 #include <std/allocer/bump/glue.h> // "胶水" (bump -> allocer)
-#include <core/span.h>             // 包含 span_t
 
 // --- 我们要测试的模块 ---
-#include <std/io/sourcemap.h> // 你的路径
+#include <std/fs/sourcemap.h> // 你的路径
 
 /**
  * @brief 辅助函数，用于验证 `source_loc_t` 的值
  */
-static void
-check_loc(source_loc_t loc, const char *file, size_t line, size_t col)
-{
+static void check_loc(source_loc_t loc, const char *file, size_t line,
+                      size_t col) {
   asrt_msg(strcmp(loc.filename, file) == 0, "Filename mismatch");
   asrt_msg(loc.line == line, "Line number mismatch");
   asrt_msg(loc.column == col, "Column number mismatch");
@@ -25,9 +24,7 @@ check_loc(source_loc_t loc, const char *file, size_t line, size_t col)
 /**
  * 测试 1：单个文件的基本查找
  */
-static void
-test_simple_lookup(void)
-{
+static void test_simple_lookup(void) {
   printf("--- Test: test_simple_lookup ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -90,9 +87,7 @@ test_simple_lookup(void)
 /**
  * 测试 2：多文件查找
  */
-static void
-test_multiple_files(void)
-{
+static void test_multiple_files(void) {
   printf("--- Test: test_multiple_files ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -155,9 +150,7 @@ test_multiple_files(void)
 /**
  * 测试 3：边缘情况 (空文件, 只有换行)
  */
-static void
-test_edge_cases(void)
-{
+static void test_edge_cases(void) {
   printf("--- Test: test_edge_cases ---\n");
   bump_t arena;
   bump_init(&arena);
@@ -196,9 +189,7 @@ test_edge_cases(void)
 /**
  * 测试 4：测试 span_t (来自 core/span.h)
  */
-static void
-test_span_helpers(void)
-{
+static void test_span_helpers(void) {
   printf("--- Test: test_span_helpers ---\n");
 
   // 1. range / len
@@ -226,10 +217,10 @@ test_span_helpers(void)
 /**
  * 测试运行器 (Test Runner)
  */
-int main(void)
-{
+int main(void) {
 #ifdef NDEBUG
-  fprintf(stderr, "Error: Cannot run tests with NDEBUG defined. Recompile in Debug mode.\n");
+  fprintf(stderr, "Error: Cannot run tests with NDEBUG defined. Recompile in "
+                  "Debug mode.\n");
   return 1;
 #endif
 
