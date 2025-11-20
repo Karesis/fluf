@@ -2,6 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)
 ![Standard](https://img.shields.io/badge/std-C23-purple.svg)
+![C/C++ CI](https://github.com/Karesis/fluf/actions/workflows/ci.yml/badge.svg)
 
 **A practical, debuggable, and opinionated C23 toolkit for compilers and systems programming.**
 
