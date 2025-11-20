@@ -1,0 +1,28 @@
+name: C CI
+
+on:
+  push:
+    branches: [ "main", "refactor" ]
+  pull_request:
+    branches: [ "main", "refactor" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Clang
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang
+
+    - name: Check Compiler Version
+      run: clang --version
+
+    - name: Build Library
+      run: make
+
+    - name: Run Tests
+      run: make test
