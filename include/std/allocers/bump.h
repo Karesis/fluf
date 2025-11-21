@@ -97,9 +97,16 @@ void bump_drop(bump_t *self);
 /**
  * @brief Reset the arena without freeing chunks.
  *
- * Keeps the current chunk active but resets its pointer.
- * Frees all *other* chunks to the backing allocator.
- * Useful for per-frame allocators.
+ * ### Strategy: "Keep the Tip".
+ * This function frees all chunks *except* the current one.
+ * Frees all *other* chunks to the backing allocator,
+ * useful for per-frame allocators.
+ *
+ * ### Why?
+ * Since chunks typically grow geometrically (doubling size), the current chunk
+ * is usually large enough to hold the entire working set of the next cycle
+ * in a single contiguous block. This reduces fragmentation and malloc calls
+ * for subsequent runs, while still releasing excess memory from peak spikes.
  */
 void bump_reset(bump_t *self);
 
