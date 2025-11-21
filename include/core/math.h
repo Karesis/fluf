@@ -194,3 +194,24 @@ static inline usize next_power_of_two(usize n)
 		typeof(high) _h = (high);           \
 		_v < _l ? _l : (_v > _h ? _h : _v); \
 	})
+
+/*
+ * ==========================================================================
+ * Checked Arithmetic (Overflow Safe)
+ * ==========================================================================
+ */
+
+/**
+ * @brief Safe addition. Returns true if overflow occurred.
+ * @param result Pointer to store the result (if no overflow).
+ */
+static inline bool checked_add(usize a, usize b, usize *result) {
+    return __builtin_add_overflow(a, b, result);
+}
+
+/**
+ * @brief Safe multiplication. Returns true if overflow occurred.
+ */
+static inline bool checked_mul(usize a, usize b, usize *result) {
+    return __builtin_mul_overflow(a, b, result);
+}

@@ -63,32 +63,43 @@
 #define f32(x) ((float)(x))
 #define f64(x) ((double)(x))
 
-/// === Type Definitions === 
+/// === Type Definitions ===
 
 /// unsigned int
-typedef uint8_t  u8;
+typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
 /// signed int
-typedef int8_t   i8;
-typedef int16_t  i16;
-typedef int32_t  i32;
-typedef int64_t  i64;
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
 
 /// size
-typedef size_t   usize;
-typedef ssize_t  isize;
-typedef char    byte;
+typedef size_t usize;
+typedef ssize_t isize;
+
+/*
+ * @brief Raw memory byte.
+ *
+ * Defined as `char` to strictly follow the C standard for pointer arithmetic
+ * (sizeof(char) == 1).
+ *
+ * Use `byte*` when you mean "address offset in bytes".
+ * Use `u8` when you mean "an 8-bit unsigned numeric value".
+ * Use `char*` or `str_t` when you mean "text/string".
+ */
+typedef char byte;
 
 /// float
-typedef float    f32;
-typedef double   f64;
+typedef float f32;
+typedef double f64;
 
 /// pointer
 typedef uintptr_t uptr;
-typedef void * anyptr;
+typedef void *anyptr;
 
 /**
  * @brief Get the standard printf format specifier for a type.
