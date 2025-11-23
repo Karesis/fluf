@@ -3,6 +3,7 @@
 #include <core/type.h>
 #include <core/msg.h>
 #include <core/macros.h>
+#include <core/math.h>
 #include <string.h>
 
 /*
@@ -107,6 +108,21 @@ static inline bool str_eq_cstr(str_t a, const char *b_cstr)
         return false;
     }
     return memcmp(a.ptr, b_cstr, a.len) == 0;
+}
+
+/**
+ * @brief Compare two slices lexicographically (like strcmp).
+ * @return < 0 if a < b, 0 if a == b, > 0 if a > b
+ */
+static inline Ordering str_cmp(str_t a, str_t b) {
+    usize min_len = a.len < b.len ? a.len : b.len;
+    int cmp = memcmp(a.ptr, b.ptr, min_len);
+    if (cmp == 0) {
+        if (a.len < b.len) return -1;
+        if (a.len > b.len) return 1;
+        return Ordering_EQ;
+    }
+    return (Ordering)cmp;
 }
 
 /**
@@ -321,3 +337,12 @@ static inline bool str_split_line(str_t *input, str_t *out_line)
         for (char var = (src).ptr[_i_##var], _once_##var = 1;       \
              _once_##var;                                           \
              _once_##var = 0)
+
+/*
+ * ==========================================================================
+ * Format
+ * ==========================================================================
+ */
+
+#define fstr "%.*s"
+#define fmt_str(s) (int)((s).len), (s).ptr
