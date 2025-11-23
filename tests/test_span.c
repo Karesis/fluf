@@ -29,25 +29,25 @@ TEST(span_construction_rules)
 {
 	/// 1. [Positive]
 	auto s1 = span(10, 20);
-	expect_eq(s1.start, usize(10));
-	expect_eq(s1.end, usize(20));
-	expect_eq(span_len(s1), usize(10));
+	expect_eq(s1.start, usize_(10));
+	expect_eq(s1.end, usize_(20));
+	expect_eq(span_len(s1), usize_(10));
 
 	/// 2. [Edge] (Sanitization)
 	/// .end = (start > end ? start : end)
 	/// so span(20, 10) should be [20, 20)
 	auto s2 = span(20, 10);
-	expect_eq(s2.start, usize(20));
-	expect_eq(s2.end, usize(20));
-	expect_eq(span_len(s2), usize(0));
+	expect_eq(s2.start, usize_(20));
+	expect_eq(s2.end, usize_(20));
+	expect_eq(span_len(s2), usize_(0));
 
 	/// 3. [Edge] (Empty Span)
 	auto s3 = span(5, 5);
-	expect_eq(span_len(s3), usize(0));
+	expect_eq(span_len(s3), usize_(0));
 
 	auto s4 = span_from_len(100, 50);
-	expect_eq(s4.start, usize(100));
-	expect_eq(s4.end, usize(150));
+	expect_eq(s4.start, usize_(100));
+	expect_eq(s4.end, usize_(150));
 
 	return true;
 }
@@ -108,8 +108,8 @@ TEST(macro_loop_execution)
 		count++;
 	}
 
-	expect_eq(count, usize(5));
-	expect_eq(sum, usize(0 + 1 + 2 + 3 + 4)); /// 10
+	expect_eq(count, usize_(5));
+	expect_eq(sum, usize_(0 + 1 + 2 + 3 + 4)); /// 10
 
 	/// 2. check empty iter
 	auto empty = span(10, 10);

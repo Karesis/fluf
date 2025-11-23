@@ -101,7 +101,7 @@ TEST(traits_string_literals)
 	expect(is_pointer("hello") == false);
 
 	/// verify size is N+1 (including null terminator)
-	expect_eq(sizeof("hello"), usize(6));
+	expect_eq(sizeof("hello"), usize_(6));
 
 	/// check decayed string pointer
 	const char *str_ptr = "hello";
@@ -115,7 +115,7 @@ TEST(traits_numeric)
 {
 	/// [positive] check integer types
 	expect(is_integer(1));
-	expect(is_integer(u32(100)));
+	expect(is_integer(u32_(100)));
 	expect(is_integer((char)'a'));
 	expect(is_integer(true));
 
@@ -228,15 +228,15 @@ TEST(utils_array_size)
 	struct Point c[5];
 
 	/// check basic array sizes
-	expect_eq(array_size(a), usize(10));
-	expect_eq(array_size(b), usize(3));
-	expect_eq(array_size(c), usize(5));
+	expect_eq(array_size(a), usize_(10));
+	expect_eq(array_size(b), usize_(3));
+	expect_eq(array_size(c), usize_(5));
 
 	/// check multi-dimensional array
 	/// should return the size of the first dimension
 	int grid[4][5];
-	expect_eq(array_size(grid), usize(4));
-	expect_eq(array_size(grid[0]), usize(5));
+	expect_eq(array_size(grid), usize_(4));
+	expect_eq(array_size(grid[0]), usize_(5));
 
 	/// note: we cannot test array_size(ptr) failure here
 	/// because it triggers a compile-time static_assert error

@@ -48,7 +48,7 @@ TEST(string_push_append)
 	expect_eq(strcmp(string_cstr(&s), "ABCDEFG"), 0);
 
 	/// check length
-	expect_eq(string_len(&s), usize(7));
+	expect_eq(string_len(&s), usize_(7));
 
 	string_deinit(&s);
 	return true;
@@ -98,12 +98,12 @@ TEST(string_reserve_logic)
 	expect(s.cap >= 101); // 100 + null terminator
 
 	/// current length should still be 0
-	expect_eq(string_len(&s), usize(0));
+	expect_eq(string_len(&s), usize_(0));
 	expect_eq(strcmp(string_cstr(&s), ""), 0);
 
 	/// fill it up partially
 	expect(string_append_cstr(&s, "Hello"));
-	expect_eq(string_len(&s), usize(5));
+	expect_eq(string_len(&s), usize_(5));
 
 	string_deinit(&s);
 	return true;
@@ -136,7 +136,7 @@ TEST(string_formatting_complex)
 
 	string_clear(s);
 	expect(string_fmt(s, "%s", long_str));
-	expect_eq(string_len(s), usize(1023));
+	expect_eq(string_len(s), usize_(1023));
 	expect(s->cap >= 1024);
 
 	/// verify tail
@@ -154,11 +154,11 @@ TEST(string_clear_reuse)
 	expect(string_init(&s, sys, 10));
 
 	expect(string_append_cstr(&s, "Hello World"));
-	expect_eq(string_len(&s), usize(11));
+	expect_eq(string_len(&s), usize_(11));
 
 	/// clear
 	string_clear(&s);
-	expect_eq(string_len(&s), usize(0));
+	expect_eq(string_len(&s), usize_(0));
 	expect_eq(strcmp(string_cstr(&s), ""), 0);
 
 	/// reuse (Capacity should be preserved)
@@ -181,7 +181,7 @@ TEST(string_view_interaction)
 
 	/// convert to view
 	str_t view = string_as_str(&s);
-	expect_eq(view.len, usize(7));
+	expect_eq(view.len, usize_(7));
 	expect(str_eq(view, str("foo bar")));
 
 	/// use view APIs

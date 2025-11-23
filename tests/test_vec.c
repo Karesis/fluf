@@ -18,7 +18,7 @@ TEST(vec_basic_int)
 	for (int i = 0; i < 10; ++i) {
 		expect(vec_push(v, i));
 	}
-	expect_eq(vec_len(v), usize(10));
+	expect_eq(vec_len(v), usize_(10));
 	expect(vec_cap(v) >= 10);
 
 	/// 3. access
@@ -29,7 +29,7 @@ TEST(vec_basic_int)
 
 	/// 4. pop
 	expect_eq(vec_pop(v), 9);
-	expect_eq(vec_len(v), usize(9));
+	expect_eq(vec_len(v), usize_(9));
 
 	vec_deinit(v);
 	return true;
@@ -47,7 +47,7 @@ TEST(vec_struct_type)
 	/// literal push
 	vec_push(points, ((Point){ .x = 30, .y = 40 }));
 
-	expect_eq(vec_len(points), usize(2));
+	expect_eq(vec_len(points), usize_(2));
 	expect_eq(points.data[0].x, 10);
 	expect_eq(points.data[1].y, 40);
 
@@ -94,7 +94,7 @@ TEST(vec_reserve_logic)
 	/// reserve space
 	expect(vec_reserve(v, 100));
 	expect(vec_cap(v) >= 100);
-	expect_eq(vec_len(v), usize(0));
+	expect_eq(vec_len(v), usize_(0));
 
 	/// pointer stability check (should be same if no reallocation needed)
 	int *ptr1 = v.data;
@@ -122,7 +122,7 @@ TEST(vec_heap_lifecycle)
 	vec_push(*v, 100);
 	vec_push(*v, 200);
 
-	expect_eq(vec_len(*v), usize(2));
+	expect_eq(vec_len(*v), usize_(2));
 	expect_eq(vec_at(*v, 0), 100);
 
 	/// 3. drop

@@ -27,18 +27,18 @@
 TEST(math_power_of_two)
 {
 	/// check basic powers of two
-	expect(is_power_of_two(usize(1)));
-	expect(is_power_of_two(usize(2)));
-	expect(is_power_of_two(usize(4096)));
-	expect(is_power_of_two(usize(1) << 63));
+	expect(is_power_of_two(usize_(1)));
+	expect(is_power_of_two(usize_(2)));
+	expect(is_power_of_two(usize_(4096)));
+	expect(is_power_of_two(usize_(1) << 63));
 
 	/// check non powers of two
-	expect(!is_power_of_two(usize(3)));
-	expect(!is_power_of_two(usize(100)));
-	expect(!is_power_of_two((usize(1) << 63) + 1));
+	expect(!is_power_of_two(usize_(3)));
+	expect(!is_power_of_two(usize_(100)));
+	expect(!is_power_of_two((usize_(1) << 63) + 1));
 
 	/// check edge case: 0 is not a power of two
-	expect(!is_power_of_two(usize(0)));
+	expect(!is_power_of_two(usize_(0)));
 
 	return true;
 }
@@ -47,27 +47,27 @@ TEST(math_alignment_logic)
 {
 	/// 1. align_up
 	/// check standard alignment scenarios
-	expect_eq(align_up(usize(5), usize(4)), usize(8));
-	expect_eq(align_up(usize(1), usize(4)), usize(4));
+	expect_eq(align_up(usize_(5), usize_(4)), usize_(8));
+	expect_eq(align_up(usize_(1), usize_(4)), usize_(4));
 
 	/// check when already aligned (should stay same)
-	expect_eq(align_up(usize(8), usize(4)), usize(8));
-	expect_eq(align_up(usize(0), usize(4)), usize(0));
+	expect_eq(align_up(usize_(8), usize_(4)), usize_(8));
+	expect_eq(align_up(usize_(0), usize_(4)), usize_(0));
 
 	/// check alignment to 1 (identity)
-	expect_eq(align_up(usize(123), usize(1)), usize(123));
+	expect_eq(align_up(usize_(123), usize_(1)), usize_(123));
 
 	/// 2. align_down
 	/// check truncating down logic
-	expect_eq(align_down(usize(7), usize(4)), usize(4));
-	expect_eq(align_down(usize(4), usize(4)), usize(4));
-	expect_eq(align_down(usize(3), usize(4)), usize(0));
+	expect_eq(align_down(usize_(7), usize_(4)), usize_(4));
+	expect_eq(align_down(usize_(4), usize_(4)), usize_(4));
+	expect_eq(align_down(usize_(3), usize_(4)), usize_(0));
 
 	/// 3. is_aligned
 	/// check alignment verification
-	expect(is_aligned(usize(1024), usize(512)));
-	expect(is_aligned(usize(0), usize(8)));
-	expect(!is_aligned(usize(1025), usize(512)));
+	expect(is_aligned(usize_(1024), usize_(512)));
+	expect(is_aligned(usize_(0), usize_(8)));
+	expect(!is_aligned(usize_(1025), usize_(512)));
 
 	return true;
 }
@@ -76,13 +76,13 @@ TEST(math_alignment_death)
 {
 	/// check if align_up panics when align is not a power of two
 	/// e.g. aligning to 3 is invalid
-	expect_panic(align_up(usize(10), usize(3)));
+	expect_panic(align_up(usize_(10), usize_(3)));
 
 	/// check align_down panic condition
-	expect_panic(align_down(usize(10), usize(5)));
+	expect_panic(align_down(usize_(10), usize_(5)));
 
 	/// check is_aligned panic condition
-	expect_panic(is_aligned(usize(10), usize(6)));
+	expect_panic(is_aligned(usize_(10), usize_(6)));
 
 	return true;
 }
@@ -97,26 +97,26 @@ TEST(math_intrinsics)
 {
 	/// 1. Count Leading Zeros (clz64)
 	/// check basic cases
-	expect_eq(clz64(u64(0xF000000000000000)), 0);
-	expect_eq(clz64(u64(1)), 63);
+	expect_eq(clz64(u64_(0xF000000000000000)), 0);
+	expect_eq(clz64(u64_(1)), 63);
 
 	/// check edge case: 0 input should return 64
-	expect_eq(clz64(u64(0)), 64);
+	expect_eq(clz64(u64_(0)), 64);
 
 	/// 2. Count Trailing Zeros (ctz64)
 	/// check basic cases
-	expect_eq(ctz64(u64(8)), 3);
-	expect_eq(ctz64(u64(1)), 0);
-	expect_eq(ctz64(u64(0x8000000000000000)), 63);
+	expect_eq(ctz64(u64_(8)), 3);
+	expect_eq(ctz64(u64_(1)), 0);
+	expect_eq(ctz64(u64_(0x8000000000000000)), 63);
 
 	/// check edge case: 0 input should return 64
-	expect_eq(ctz64(u64(0)), 64);
+	expect_eq(ctz64(u64_(0)), 64);
 
 	/// 3. Population Count (popcount64)
 	/// check basic bit counting
-	expect_eq(popcount64(u64(0)), 0);
-	expect_eq(popcount64(u64(0xFFFFFFFFFFFFFFFF)), 64);
-	expect_eq(popcount64(u64(0b10101)), 3);
+	expect_eq(popcount64(u64_(0)), 0);
+	expect_eq(popcount64(u64_(0xFFFFFFFFFFFFFFFF)), 64);
+	expect_eq(popcount64(u64_(0b10101)), 3);
 
 	return true;
 }
@@ -130,23 +130,23 @@ TEST(math_intrinsics)
 TEST(math_next_pow2)
 {
 	/// check small numbers
-	expect_eq(next_power_of_two(usize(0)), usize(1));
-	expect_eq(next_power_of_two(usize(1)), usize(1));
-	expect_eq(next_power_of_two(usize(2)), usize(2));
+	expect_eq(next_power_of_two(usize_(0)), usize_(1));
+	expect_eq(next_power_of_two(usize_(1)), usize_(1));
+	expect_eq(next_power_of_two(usize_(2)), usize_(2));
 
 	/// check rounding behavior
-	expect_eq(next_power_of_two(usize(3)), usize(4));
-	expect_eq(next_power_of_two(usize(100)), usize(128));
+	expect_eq(next_power_of_two(usize_(3)), usize_(4));
+	expect_eq(next_power_of_two(usize_(100)), usize_(128));
 
 	/// check large boundary values
-	usize large_pow2 = usize(1) << 62;
+	usize large_pow2 = usize_(1) << 62;
 	expect_eq(next_power_of_two(large_pow2), large_pow2);
 	expect_eq(next_power_of_two(large_pow2 - 1), large_pow2);
 
 	/// check overflow handling
 	/// if the result would overflow usize, it should return 0
 	usize huge = (usize)-1;
-	expect_eq(next_power_of_two(huge), usize(0));
+	expect_eq(next_power_of_two(huge), usize_(0));
 
 	return true;
 }

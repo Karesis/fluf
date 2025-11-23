@@ -11,23 +11,23 @@ TEST(str_construction)
 {
     /// literal construction
     str_t s1 = str("hello");
-    expect_eq(s1.len, usize(5));
+    expect_eq(s1.len, usize_(5));
     expect(s1.ptr[0] == 'h');
 
     /// from cstr
     const char *raw = "world";
     str_t s2 = str_from_cstr(raw);
-    expect_eq(s2.len, usize(5));
+    expect_eq(s2.len, usize_(5));
     expect(s2.ptr == raw);
 
     /// empty case
     str_t s3 = str_from_cstr(nullptr);
-    expect_eq(s3.len, usize(0));
+    expect_eq(s3.len, usize_(0));
     expect(s3.ptr == nullptr);
 
     /// manual parts construction (with safety check)
     str_t s4 = str_from_parts("test", 4);
-    expect_eq(s4.len, usize(4));
+    expect_eq(s4.len, usize_(4));
     
     /// check panic on invalid input
     /// str_from_parts(NULL, 5) should panic
@@ -85,17 +85,17 @@ TEST(str_trimming)
     
     /// trim left
     str_t left = str_trim_left(s);
-    expect_eq(left.len, usize(7));
+    expect_eq(left.len, usize_(7));
     expect(str_eq(left, str("hello  ")));
 
     /// trim right
     str_t right = str_trim_right(s);
-    expect_eq(right.len, usize(7));
+    expect_eq(right.len, usize_(7));
     expect(str_eq(right, str("  hello")));
 
     /// trim both
     str_t both = str_trim(s);
-    expect_eq(both.len, usize(5));
+    expect_eq(both.len, usize_(5));
     expect(str_eq(both, str("hello")));
 
     /// trim empty/all-whitespace
@@ -155,7 +155,7 @@ TEST(str_iterators)
     expect_eq(count, 3);
 
     /// Verify original slice is untouched (Non-destructive)
-    expect_eq(csv.len, usize(19));
+    expect_eq(csv.len, usize_(19));
     expect(csv.ptr[0] == 'a');
 
     /// 2. Test Lines Iterator (str_for_lines)
@@ -204,7 +204,7 @@ TEST(str_lines_iterator_smart)
         if (count == 0) {
             expect(str_eq_cstr(line, "Hello"));
             /// Verify \r is stripped
-            expect(line.len == usize(5));
+            expect(line.len == usize_(5));
         }
         if (count == 1) expect(str_eq_cstr(line, "World"));
         count++;

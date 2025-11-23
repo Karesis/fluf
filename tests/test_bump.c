@@ -74,7 +74,7 @@ TEST(bump_lifecycle_stack)
 
 	/// at init, it does NOT allocate any chunk yet (lazy init)
 	/// implementation sets `get_empty_chunk()`, so 0 allocations expected.
-	expect_eq(mock_st.alloc_calls, usize(0));
+	expect_eq(mock_st.alloc_calls, usize_(0));
 
 	/// 2. first allocation triggers chunk creation
 	int *i = bump_alloc_type(&bump, int);
@@ -82,14 +82,14 @@ TEST(bump_lifecycle_stack)
 	*i = 123;
 
 	/// now we expect 1 chunk allocation from backing
-	expect_eq(mock_st.alloc_calls, usize(1));
+	expect_eq(mock_st.alloc_calls, usize_(1));
 
 	/// 3. deinit
 	bump_deinit(&bump);
 
 	/// Should free the chunk
-	expect_eq(mock_st.free_calls, usize(1));
-	expect_eq(mock_st.bytes_allocated, usize(0)); /// no leaks
+	expect_eq(mock_st.free_calls, usize_(1));
+	expect_eq(mock_st.bytes_allocated, usize_(0)); /// no leaks
 
 	return true;
 }
@@ -104,14 +104,14 @@ TEST(bump_lifecycle_heap)
 	expect(b != nullptr);
 
 	/// backing should have alloc'd sizeof(bump_t)
-	expect_eq(mock_st.alloc_calls, usize(1));
+	expect_eq(mock_st.alloc_calls, usize_(1));
 
 	/// 2. drop
 	bump_drop(b);
 
 	/// should free bump_t struct
-	expect_eq(mock_st.free_calls, usize(1));
-	expect_eq(mock_st.bytes_allocated, usize(0));
+	expect_eq(mock_st.free_calls, usize_(1));
+	expect_eq(mock_st.bytes_allocated, usize_(0));
 
 	return true;
 }
@@ -142,7 +142,7 @@ TEST(bump_direction_and_layout)
 	expect((uptr)p2 < (uptr)p1);
 
 	/// Check adjacency (no alignment padding for u8)
-	expect_eq((uptr)p1 - (uptr)p2, usize(1));
+	expect_eq((uptr)p1 - (uptr)p2, usize_(1));
 
 	bump_deinit(&bump);
 	return true;
@@ -196,14 +196,14 @@ TEST(bump_growth_and_reset)
 	expect(p2 != nullptr);
 
 	/// expect 2 chunks allocated
-	expect_eq(mock_st.alloc_calls, usize(2));
+	expect_eq(mock_st.alloc_calls, usize_(2));
 
 	/// 2. test reset
 	/// bump_reset keeps the CURRENT chunk, but frees OLD chunks.
 	bump_reset(&bump);
 
 	/// we had 2 chunks. Reset keeps 1 (current), frees 1 (old).
-	expect_eq(mock_st.free_calls, usize(1));
+	expect_eq(mock_st.free_calls, usize_(1));
 
 	/// 3. alloc again
 	/// should fit in the kept chunk
@@ -211,12 +211,12 @@ TEST(bump_growth_and_reset)
 	expect(p3 != nullptr);
 
 	/// no new allocs needed from backing
-	expect_eq(mock_st.alloc_calls, usize(2)); // still 2 total calls
+	expect_eq(mock_st.alloc_calls, usize_(2)); // still 2 total calls
 
 	bump_deinit(&bump);
 	/// final cleanup frees the last chunk
-	expect_eq(mock_st.free_calls, usize(2));
-	expect_eq(mock_st.bytes_allocated, usize(0));
+	expect_eq(mock_st.free_calls, usize_(2));
+	expect_eq(mock_st.bytes_allocated, usize_(0));
 
 	return true;
 }

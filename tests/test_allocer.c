@@ -107,18 +107,18 @@ TEST(allocer_vtable_dispatch)
 	auto p1 = alloc_type(a, int);
 	expect(p1 != nullptr);
 	*p1 = 42;
-	expect_eq(state.alloc_count, usize(1));
+	expect_eq(state.alloc_count, usize_(1));
 
 	/// Check alignment impact
 	/// int is usually 4-byte aligned. Current offset should be around 4.
-	expect(state.offset >= usize(4));
+	expect(state.offset >= usize_(4));
 
 	/// 3. Test zalloc (Override)
 	/// Expect zalloc_count to increase
 	auto p2 = zalloc_type(a, int);
 	expect(p2 != nullptr);
 	expect_eq(*p2, 0); // Should be zeroed
-	expect_eq(state.zalloc_count, usize(1));
+	expect_eq(state.zalloc_count, usize_(1));
 
 	/// 4. Test free (No-op)
 	/// Should not crash
@@ -164,7 +164,7 @@ TEST(allocer_oom_handling)
 	allocer_t a = { .self = &state, .vtable = &bump_vtable };
 
 	/// Try to allocate more than BUMP_SIZE
-	auto huge = layout(usize(BUMP_SIZE + 1), usize(1));
+	auto huge = layout(usize_(BUMP_SIZE + 1), usize_(1));
 	anyptr p = allocer_alloc(a, huge);
 
 	/// Should return nullptr gracefully

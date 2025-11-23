@@ -91,8 +91,8 @@ TEST(reflection_magic)
 	ResIntStr r = ok(1);
 
 	/// check tag size constants.
-	expect_eq(sizeof(o._tag), usize(1));
-	expect_eq(sizeof(r._tag), usize(2));
+	expect_eq(sizeof(o._tag), usize_(1));
+	expect_eq(sizeof(r._tag), usize_(2));
 
 	/// verify `_is_result` macro accuracy.
 	expect(_is_result(o) == false);

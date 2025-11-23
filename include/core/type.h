@@ -25,44 +25,6 @@
 /// for ssize_t
 #include <sys/types.h>
 
-/// === Explicit Type Casting ===
-
-/// --- Unsigned Integers ---
-#define u8(x) ((uint8_t)(x))
-#define u16(x) ((uint16_t)(x))
-#define u32(x) ((uint32_t)(x))
-#define u64(x) ((uint64_t)(x))
-
-/// --- Signed Integers ---
-#define i8(x) ((int8_t)(x))
-#define i16(x) ((int16_t)(x))
-#define i32(x) ((int32_t)(x))
-#define i64(x) ((int64_t)(x))
-
-/// --- System Types ---
-
-/**
- * @brief Construct a size_t (unsigned system word size).
- * Equivalent to Rust's usize.
- */
-#define usize(x) ((size_t)(x))
-
-/**
- * @brief Construct a ssize_t (signed system word size).
- * Equivalent to Rust's isize.
- */
-#define isize(x) ((ssize_t)(x))
-
-/**
- * @brief Construct a uintptr_t (unsigned pointer-sized int).
- * Used for pointer arithmetic or bitwise operations on addresses.
- */
-#define uptr(x) ((uintptr_t)(x))
-
-/// --- Floating Point ---
-#define f32(x) ((float)(x))
-#define f64(x) ((double)(x))
-
 /// === Type Definitions ===
 
 /// unsigned int
@@ -100,6 +62,44 @@ typedef double f64;
 /// pointer
 typedef uintptr_t uptr;
 typedef void *anyptr;
+
+/// === Explicit Type Casting ===
+
+/// --- Unsigned Integers ---
+#define u8_(x) ((uint8_t)(x))
+#define u16_(x) ((uint16_t)(x))
+#define u32_(x) ((uint32_t)(x))
+#define u64_(x) ((uint64_t)(x))
+
+/// --- Signed Integers ---
+#define i8_(x) ((int8_t)(x))
+#define i16_(x) ((int16_t)(x))
+#define i32_(x) ((int32_t)(x))
+#define i64_(x) ((int64_t)(x))
+
+/// --- System Types ---
+
+/**
+ * @brief Construct a size_t (unsigned system word size).
+ * Equivalent to Rust's usize.
+ */
+#define usize_(x) ((size_t)(x))
+
+/**
+ * @brief Construct a ssize_t (signed system word size).
+ * Equivalent to Rust's isize.
+ */
+#define isize_(x) ((ssize_t)(x))
+
+/**
+ * @brief Construct a uintptr_t (unsigned pointer-sized int).
+ * Used for pointer arithmetic or bitwise operations on addresses.
+ */
+#define uptr_(x) ((uintptr_t)(x))
+
+/// --- Floating Point ---
+#define f32_(x) ((float)(x))
+#define f64_(x) ((double)(x))
 
 /**
  * @brief Get the standard printf format specifier for a type.
