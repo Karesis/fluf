@@ -5,7 +5,7 @@ CC := clang
 # -- Flags --
 
 # compiler flags
-CFLAGS := -g -Wall -Wextra -std=c23 -D_POSIX_C_SOURCE=200809L
+CFLAGS := -g -Wall -Wextra -std=c23 -D_POSIX_C_SOURCE=200809L -D_DEFAULT_SOURCE
 # c preprosser flags
 CPPFLAGS := -Iinclude -MMD -MP
 # linker libraries
