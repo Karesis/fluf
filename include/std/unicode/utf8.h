@@ -9,10 +9,10 @@
  * ==========================================================================
  */
 
-/// Unicode Replacement Character ()
+/// unicode Replacement Character ()
 #define UTF8_REPLACEMENT_CHARACTER 0xFFFD
 
-/// Unicode Codepoint (32-bit, usually 21-bit effective)
+/// unicode Codepoint (32-bit, usually 21-bit effective)
 typedef u32 rune_t;
 #define rune(x) ((rune_t)(x))
 
@@ -20,8 +20,8 @@ typedef u32 rune_t;
  * @brief Result of a decoding operation.
  */
 typedef struct {
-    rune_t value; /// The decoded codepoint (or REPLACEMENT if invalid)
-    u8 len;       /// The width in bytes (1-4) consumed.
+	rune_t value; /// the decoded codepoint (or REPLACEMENT if invalid)
+	u8 len; /// the width in bytes (1-4) consumed.
 } utf8_decode_result_t;
 
 /*
@@ -59,15 +59,16 @@ typedef struct {
  */
 
 typedef struct {
-    str_t src;     /// The source slice
-    usize cursor;  /// Current byte offset
+	str_t src; /// the source slice
+	usize cursor; /// current byte offset
 } utf8_iter_t;
 
 /**
  * @brief Initialize iterator from a string slice.
  */
-static inline utf8_iter_t utf8_iter_new(str_t s) {
-    return (utf8_iter_t){ .src = s, .cursor = 0 };
+static inline utf8_iter_t utf8_iter_new(str_t s)
+{
+	return (utf8_iter_t){ .src = s, .cursor = 0 };
 }
 
 /**

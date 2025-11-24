@@ -1,12 +1,18 @@
 #pragma once
 #include <core/type.h>
-#include <std/unicode/utf8.h> // for rune_t
+#include <std/unicode/utf8.h> /// for rune_t
 
 /*
  * Basic ASCII Checks (Fast path)
  */
-static inline bool unicode_is_ascii(rune_t c) { return c <= 0x7F; }
-static inline bool unicode_is_ascii_digit(rune_t c) { return c >= '0' && c <= '9'; }
+static inline bool unicode_is_ascii(rune_t c)
+{
+	return c <= 0x7F;
+}
+static inline bool unicode_is_ascii_digit(rune_t c)
+{
+	return c >= '0' && c <= '9';
+}
 
 /*
  * Unicode Properties (Backed by Binary Search Tables)
