@@ -8,7 +8,7 @@
 
 `fluf` is a foundational library designed to break the cycle of complex abstractions. It rejects "template-in-C" macro magic in favor of concrete, simple, and highly debuggable tools tailored for high-performance tasks like building compilers, tools, and emulators.
 
-> **Status:** The **Core** infrastructure and **Standard** library (Allocators, Containers, Strings) are implemented and tested. The IO module is next on the roadmap.
+> **Status:** **v0.3.0 (Feature Complete).** The Core infrastructure and Standard Library (including IO, System, and Unicode support) are fully implemented and tested.
 
 ## Core Philosophy
 
@@ -21,23 +21,43 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
 
 ## Features
 
-### ✅ Core Infrastructure (`include/core/`)
-* **Type System:** Primitive aliases and safe casting macros.
+### Core Infrastructure (`include/core/`)
+* **Type System:** Primitive aliases, safe casting macros, and `fmt()` generics.
 * **Memory:** `allocer_t` v-table interface and `layout_t`.
 * **Error Handling:** `Result<T,E>` and `Option<T>` monads.
-* **Testing:** Header-only test framework with Death Tests.
+* **Testing:** Header-only test framework with Process Isolation (Death Tests).
+* **Hashing:** FNV-1a 64-bit implementation.
 
-### ✅ Standard Library (`include/std/`)
+### Standard Library (`include/std/`)
+
+#### Memory & Containers
 * **Allocators:**
     * `allocer_system()`: Cross-platform (POSIX/Windows) system heap wrapper.
     * `bump_t`: High-performance arena allocator with "Keep-the-Tip" reset strategy.
 * **Containers:**
     * `vec(T)`: Type-safe dynamic array (macro-wrapped, void* backed).
-    * `map(K, V)`: Open-addressing hash map with linear probing.
+    * `map(K, V)`: Open-addressing hash map with linear probing and tombstone support.
+    * `idlist_t`: Intrusive circular doubly linked list.
+    * `bitset_t`: Dense bitset optimized with word-level operations and intrinsics.
+
+#### String & Text
 * **Strings:**
-    * `str_t`: Non-owning string slice (View).
-    * `string_t`: Owned, growable string builder.
+    * `str_t`: Non-owning string slice (View) with zero-copy splitting/trimming.
+    * `string_t`: Owned, growable string builder ensuring null-termination.
     * `interner_t`: String Interner (Symbol Table) using Bump allocation for stable storage.
+* **Unicode:**
+    * `utf8`: Secure decoder/encoder handling overlong sequences and surrogates.
+    * `prop`: Binary-search based character properties (XID, WhiteSpace).
+
+#### System & I/O
+* **FileSystem (`fs`):**
+    * `file`: Zero-copy read-to-string and atomic write helpers.
+    * `path`: Cross-platform path builder and query utilities.
+    * `dir`: Recursive directory walker (POSIX `opendir` / Windows `FindFirstFile`).
+    * `srcmanager`: Source file manager mapping global offsets to file/line/col (Diagnostic infrastructure).
+* **Environment (`env`):**
+    * `args`: Iterator-based command line argument parser.
+    * `env`: Cross-platform environment variable getter/setter.
 
 ## Getting Started
 
@@ -59,7 +79,7 @@ make test
 
 # Clean build artifacts
 make clean
-```
+````
 
 ### Example: Symbol Table Simulation
 
@@ -145,3 +165,4 @@ See [SUMMARY.md](./docs/reference/SUMMARY.md) for generated markdown files.
 ## License
 
 This project is licensed under the **Apache-2.0 License**. See the [LICENSE](./LICENSE) file for details.
+
