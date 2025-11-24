@@ -123,3 +123,21 @@ Clamp a value between low and high (type-safe).
 
 ---
 
+## `static inline bool checked_add(usize a, usize b, usize *result) {`
+
+
+Safe addition. Returns true if overflow occurred.
+
+- **`result`**: Pointer to store the result (if no overflow).
+
+
+---
+
+## `static inline bool checked_mul(usize a, usize b, usize *result) {`
+
+
+Safe multiplication. Returns true if overflow occurred.
+
+
+---
+

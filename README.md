@@ -8,7 +8,7 @@
 
 `fluf` is a foundational library designed to break the cycle of complex abstractions. It rejects "template-in-C" macro magic in favor of concrete, simple, and highly debuggable tools tailored for high-performance tasks like building compilers, tools, and emulators.
 
-> **Note:** This project is currently undergoing a major refactor. The **Core** infrastructure (Types, Memory Layout, Allocator Interface, Testing) is stable. The **Standard** library (Vectors, Strings, Bump Allocators) is actively being ported.
+> **Status:** The **Core** infrastructure and **Standard** library (Allocators, Containers, Strings) are implemented and tested. The IO module is next on the roadmap.
 
 ## Core Philosophy
 
@@ -19,26 +19,25 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
 * **Allocator-Driven:** All memory management goes through an abstract `allocer_t` v-table interface, allowing seamless switching between Heap and Bump/Arena allocators.
 * **Stack-Based Lifecycle:** Stateful objects prefer an `_init() / _destroy()` lifecycle on the stack to avoid unnecessary heap allocations and lifetime bugs.
 
-## Features (Current Refactor Status)
+## Features
 
-### Core Infrastructure (`include/core/`)
+### ✅ Core Infrastructure (`include/core/`)
+* **Type System:** Primitive aliases and safe casting macros.
+* **Memory:** `allocer_t` v-table interface and `layout_t`.
+* **Error Handling:** `Result<T,E>` and `Option<T>` monads.
+* **Testing:** Header-only test framework with Death Tests.
 
-The bedrock of the library is fully implemented and tested:
-
-* **Type System (`type.h`):** Rust-style primitive aliases (`u8`, `usize`, `i32`), safe casting, and `fmt()` generics.
-* **Memory Management (`mem/`):**
-  * `layout_t`: A standardized struct for memory requirements (size + alignment).
-  * `allocer_t`: A v-table interface (Fat Pointer) for polymorphic memory allocators.
-* **Error Handling (`result.h`):** Rust-inspired `Result<T, E>` and `Option<T>` with `try()` and `if_let` macros for control flow.
-* **Metaprogramming (`macros.h`):** Type introspection (`is_pointer`, `is_array`), `container_of`, and safety checks.
-* **Testing (`std/test.h`):** A header-only, GoogleTest-inspired testing framework supporting **Death Tests** (`expect_panic`).
-
-### Roadmap (Porting from Main)
-
-* **Allocators:** Bump/Arena allocators.
-* **Containers:** `vec_t` (Dynamic Array), `strhashmap_t` (Linear Probing Map).
-* **Strings:** `strslice_t` (String View), `string_t` (Builder), `strintern_t` (Interner).
-* **IO:** File reading/writing utilities.
+### ✅ Standard Library (`include/std/`)
+* **Allocators:**
+    * `allocer_system()`: Cross-platform (POSIX/Windows) system heap wrapper.
+    * `bump_t`: High-performance arena allocator with "Keep-the-Tip" reset strategy.
+* **Containers:**
+    * `vec(T)`: Type-safe dynamic array (macro-wrapped, void* backed).
+    * `map(K, V)`: Open-addressing hash map with linear probing.
+* **Strings:**
+    * `str_t`: Non-owning string slice (View).
+    * `string_t`: Owned, growable string builder.
+    * `interner_t`: String Interner (Symbol Table) using Bump allocation for stable storage.
 
 ## Getting Started
 
@@ -62,33 +61,78 @@ make test
 make clean
 ```
 
-### Example: Result Handling & Allocator Interface
+### Example: Symbol Table Simulation
 
-Since the high-level containers are WIP, here is how the Core modules work today:
+This example demonstrates how `fluf` components work together to build a high-performance symbol table, typical in compiler development.
 
 ```c
-#include <core/result.h>
-#include <core/mem/allocer.h>
+#include <std/vec.h>
+#include <std/map.h>
+#include <std/strings/intern.h>
+#include <std/allocers/system.h>
 #include <stdio.h>
 
-// Define a Result type: returns i32 on success, const char* on error
-defResult(i32, const char*, ResInt);
-
-ResInt safe_divide(i32 a, i32 b) {
-    if (b == 0) return (ResInt)err("Division by zero");
-    return (ResInt)ok(a / b);
-}
+// 1. Define generic containers
+// Map: Symbol ID -> Integer Value (e.g., variable value)
+defMap(symbol_t, int, SymbolMap);
+// Vec: List of active symbols
+defVec(symbol_t, SymbolList);
 
 int main(void) {
-    ResInt r = safe_divide(10, 2);
+    // Setup memory
+    allocer_t sys = allocer_system();
+    
+    // Initialize Interner (Symbol Table) and Containers
+    interner_t interner;
+    intern_init(&interner, sys); // Uses internal Bump allocator for strings
 
-    // Rust-style if_let syntax
-    if_let(val, r) {
-        printf("Result: %d\n", val);
-    } else {
-        printf("Error: %s\n", r.err);
+    SymbolMap values;
+    map_init(values, sys, MAP_OPS_USIZE); // symbol_t is just a wrapper around u32/size
+
+    SymbolList active_vars;
+    vec_init(active_vars, sys, 0);
+
+    // --- Simulation ---
+
+    // 1. Intern strings (Lexing phase)
+    // "foo" and "bar" are stored in the interner's arena.
+    // `s1` and `s2` are just u32 IDs.
+    symbol_t s1 = intern_cstr(&interner, "foo");
+    symbol_t s2 = intern_cstr(&interner, "bar");
+    symbol_t s3 = intern_cstr(&interner, "foo"); // Reuse!
+
+    // Deduplication check
+    if (sym_eq(s1, s3)) {
+        printf("Interner working: 'foo' has same ID (%u)\n", s1.id);
     }
 
+    // 2. Assign values (Parsing/Analysis phase)
+    map_put(values, s1, 42);
+    map_put(values, s2, 100);
+
+    // 3. Track order
+    vec_push(active_vars, s1);
+    vec_push(active_vars, s2);
+
+    // 4. Iterate and Resolve
+    printf("\n--- Symbol Dump ---\n");
+    vec_foreach(sym_ptr, active_vars) {
+        symbol_t sym = *sym_ptr;
+        
+        // Resolve ID -> String (O(1))
+        str_t name = intern_resolve(&interner, sym);
+        
+        // Retrieve Value (O(1))
+        int *val = map_get(values, sym);
+
+        printf("Var '" fmt_str(name) "' = %d\n", name, val ? *val : 0);
+    }
+
+    // Cleanup (RAII-style usually, but explicit here)
+    vec_deinit(active_vars);
+    map_deinit(values);
+    intern_deinit(&interner); // Frees all string memory at once!
+    
     return 0;
 }
 ```
