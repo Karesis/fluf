@@ -405,12 +405,31 @@ anyptr bump_alloc_copy(bump_t *self, const void *src, usize size, usize align)
 	return dest;
 }
 
-char *bump_alloc_str(bump_t *self, const char *str)
+char *bump_alloc_cstr(bump_t *self, const char *str)
 {
 	if (!str)
 		return nullptr;
 	usize len = strlen(str);
 	return (char *)bump_alloc_copy(self, str, len + 1, 1);
+}
+
+char *bump_dup_str(bump_t *self, str_t s)
+{
+	if (s.len == 0) {
+		/// return "", not nullptr
+		char *empty = (char *)bump_alloc(self, 1, 1);
+		if (empty)
+			*empty = '\0';
+		return empty;
+	}
+
+	/// len + 1 for '\0'
+	char *ptr = (char *)bump_alloc(self, s.len + 1, 1);
+	if (ptr) {
+		memcpy(ptr, s.ptr, s.len);
+		ptr[s.len] = '\0';
+	}
+	return ptr;
 }
 
 anyptr bump_zalloc(bump_t *self, layout_t layout)

@@ -3,6 +3,7 @@
 #include <core/mem/layout.h>
 #include <core/mem/allocer.h>
 #include <core/type.h>
+#include <std/strings/str.h>
 #include <core/msg.h>
 
 /*
@@ -155,10 +156,22 @@ anyptr bump_zalloc(bump_t *self, layout_t layout);
 anyptr bump_alloc_copy(bump_t *self, const void *src, usize size, usize align);
 
 /**
- * @brief Allocate and copy a C-string.
+ * @brief Allocate and copy a C-string (const char*).
+ * @note Performs strlen(). Safe only for null-terminated strings.
  */
 [[nodiscard]]
-char *bump_alloc_str(bump_t *self, const char *str);
+char *bump_alloc_cstr(bump_t *self, const char *str);
+
+/**
+ * @brief Allocate and copy a string slice, ensuring null-termination.
+ *
+ * Creates a stable, null-terminated C-string in the arena from a slice.
+ * Useful for interning or converting slices to C-compatible strings.
+ *
+ * @note O(1) length check (uses slice.len), safer than cstr version.
+ */
+[[nodiscard]]
+char *bump_dup_str(bump_t *self, str_t s);
 
 /**
  * @brief Resize a memory block (Pseudo-realloc).

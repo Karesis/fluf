@@ -310,7 +310,7 @@ TEST(bump_string_helper)
 	bump_init(&bump, backing, 1);
 
 	const char *src = "hello bump";
-	char *dst = bump_alloc_str(&bump, src);
+	char *dst = bump_alloc_cstr(&bump, src);
 
 	expect(dst != nullptr);
 	expect(strcmp(dst, src) == 0);
