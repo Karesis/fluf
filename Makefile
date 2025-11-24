@@ -110,3 +110,11 @@ clean:
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPS)
 endif
+
+# === Unicode ===
+
+# gen tables.gen for std/unicode
+.PHONY: gen-unicode
+gen-unicode:
+	@echo "[GEN] Updating Unicode Tables..."
+	@python3 scripts/gen_unicode.py
