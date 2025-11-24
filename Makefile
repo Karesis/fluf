@@ -118,3 +118,33 @@ endif
 gen-unicode:
 	@echo "[GEN] Updating Unicode Tables..."
 	@python3 scripts/gen_unicode.py
+
+# === Versioning Helpers ===
+
+# 1. get the newest tag 
+CURRENT_TAG := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+
+# 2. parse tag version (`v0.3.0` -> MAJOR=0, MINOR=3, PATCH=0) 
+VERSION_BITS := $(subst v,,$(CURRENT_TAG))
+MAJOR := $(word 1,$(subst ., ,$(VERSION_BITS)))
+MINOR := $(word 2,$(subst ., ,$(VERSION_BITS)))
+PATCH := $(word 3,$(subst ., ,$(VERSION_BITS)))
+
+# 3. calculate nex version 
+NEXT_PATCH := $(shell echo $$(($(PATCH)+1)))
+NEW_TAG := v$(MAJOR).$(MINOR).$(NEXT_PATCH)
+
+# 4. default msg value
+MSG ?= Auto-release $(NEW_TAG)
+
+.PHONY: btag
+
+btag:
+	@if [ -n "$$(git status --porcelain)" ]; then \
+        echo "Error: Working directory is not clean. Commit changes first."; \
+        exit 1; \
+    fi
+	@echo "[RELEASE] Bumping Patch: $(CURRENT_TAG) -> $(NEW_TAG)"
+	@echo "[MESSAGE] $(MSG)"
+	git tag -a $(NEW_TAG) -m "$(MSG)"
+	git push origin $(NEW_TAG)
