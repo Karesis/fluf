@@ -96,6 +96,67 @@ TEST(args_complex_parsing)
 	return true;
 }
 
+TEST(args_iterator_macro)
+{
+	allocer_t sys = allocer_system();
+
+	/// mock: ["./prog", "arg1", "arg2"]
+	char *mock_argv[] = { "./prog", "arg1", "arg2" };
+	int mock_argc = 3;
+
+	args_t args;
+	expect(args_init(&args, sys, mock_argc, mock_argv));
+
+	/// 1. consume Program Name manually
+	str_t prog = args_next(&args);
+	expect(str_eq_cstr(prog, "./prog"));
+
+	/// 2. iterate remaining
+	int count = 0;
+	args_foreach(arg, &args)
+	{
+		count++;
+		if (count == 1)
+			expect(str_eq_cstr(arg, "arg1"));
+		if (count == 2)
+			expect(str_eq_cstr(arg, "arg2"));
+	}
+	expect_eq(count, 2);
+
+	/// 3. verify exhaustion
+	expect(!args_has_next(&args));
+
+	args_deinit(&args);
+	return true;
+}
+
+TEST(args_iterator_empty)
+{
+	allocer_t sys = allocer_system();
+
+	/// mock: ["./prog"] (No arguments)
+	char *mock_argv[] = { "./prog" };
+	int mock_argc = 1;
+
+	args_t args;
+	expect(args_init(&args, sys, mock_argc, mock_argv));
+
+	/// skip prog
+	args_next(&args);
+
+	/// loop should not run
+	int count = 0;
+	args_foreach(arg, &args)
+	{
+		unused(arg);
+		count++;
+	}
+	expect_eq(count, 0);
+
+	args_deinit(&args);
+	return true;
+}
+
 /*
  * ==========================================================================
  * 2. Environment Variables
@@ -192,6 +253,8 @@ int main()
 	RUN(args_complex_parsing);
 	RUN(env_vars_lifecycle);
 	RUN(env_cwd_robustness);
+	RUN(args_iterator_macro);
+	RUN(args_iterator_empty);
 
 	SUMMARY();
 }

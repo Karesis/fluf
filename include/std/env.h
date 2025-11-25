@@ -87,7 +87,32 @@ str_t args_program_name(const args_t *args);
 
 /*
  * ==========================================================================
- * 2. Environment Variables
+ * 2. Iterators (Macros)
+ * ==========================================================================
+ */
+
+/**
+ * @brief Iterate over remaining arguments.
+ *
+ * @param var      The name of the str_t variable to hold the argument.
+ * @param args_ptr Pointer to the args_t object.
+ *
+ * @note This loop advances the cursor. It iterates from the CURRENT position.
+ * Usually you want to call `args_next` once to skip the program name (argv[0])
+ * before using this loop.
+ *
+ * @example
+ * args_next(&args); // Skip argv[0]
+ * args_foreach(arg, &args) {
+ * printf("Arg: " fmt(str) "\n", arg);
+ * }
+ */
+#define args_foreach(var, args_ptr) \
+    for (str_t var; args_has_next(args_ptr) ? (var = args_next(args_ptr), true) : false; )
+
+/*
+ * ==========================================================================
+ * 3. Environment Variables
  * ==========================================================================
  */
 
