@@ -200,3 +200,8 @@
 #define alinline __attribute__((always_inline)) inline
 
 #define noinline __attribute__((noinline))
+
+/**
+ * @brief RALL
+ */
+#define defer(fn) __attribute__((cleanup(fn)))
