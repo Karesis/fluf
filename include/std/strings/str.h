@@ -20,6 +20,8 @@
 #include <core/msg.h>
 #include <core/macros.h>
 #include <core/math.h>
+#include <core/result.h>
+#include <std/strings/chars.h>
 #include <string.h>
 
 /*
@@ -115,6 +117,16 @@ static inline bool str_eq(str_t a, str_t b)
 }
 
 /**
+ * @brief Compare two C-strings for equality (Safe wrapper for strcmp).
+ * Handles nullptr gracefully (nullptr == nullptr).
+ */
+static inline bool cstr_eq(const char *a, const char *b) {
+    if (a == b) return true;
+    if (!a || !b) return false;
+    return strcmp(a, b) == 0;
+}
+
+/**
  * @brief Compare slice with a C-string.
  */
 static inline bool str_eq_cstr(str_t a, const char *b_cstr)
@@ -169,10 +181,6 @@ static inline bool str_ends_with(str_t s, str_t suffix)
  * ==========================================================================
  */
 
-static inline bool _str_is_whitespace(char c)
-{
-    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-}
 
 /**
  * @brief Trim whitespace from the start.
@@ -180,7 +188,7 @@ static inline bool _str_is_whitespace(char c)
 static inline str_t str_trim_left(str_t s)
 {
     usize start = 0;
-    while (start < s.len && _str_is_whitespace(s.ptr[start])) {
+    while (start < s.len && char_is_space(s.ptr[start])) {
         start++;
     }
     return (str_t){ .ptr = s.ptr + start, .len = s.len - start };
@@ -192,7 +200,7 @@ static inline str_t str_trim_left(str_t s)
 static inline str_t str_trim_right(str_t s)
 {
     usize end = s.len;
-    while (end > 0 && _str_is_whitespace(s.ptr[end - 1])) {
+    while (end > 0 && char_is_space(s.ptr[end - 1])) {
         end--;
     }
     return (str_t){ .ptr = s.ptr, .len = end };
@@ -301,6 +309,35 @@ static inline bool str_split_line(str_t *input, str_t *out_line)
     return true;
 }
 
+/**
+ * @brief Find the first occurrence of a substring (needle) in the slice (haystack).
+ * @return Index of the match, or (usize)-1 if not found.
+ */
+static inline usize str_find(str_t haystack, str_t needle) {
+    if (needle.len == 0) return 0;
+    if (haystack.len < needle.len) return (usize)-1;
+
+    for (usize i = 0; i <= haystack.len - needle.len; ++i) {
+        if (memcmp(haystack.ptr + i, needle.ptr, needle.len) == 0) {
+            return i;
+        }
+    }
+    return (usize)-1;
+}
+
+/**
+ * @brief Split a string once by a separator.
+ * e.g. "key=value" -> left="key", right="value", return true.
+ */
+static inline bool str_cut(str_t s, str_t sep, str_t *out_left, str_t *out_right) {
+    usize idx = str_find(s, sep);
+    if (idx == (usize)-1) return false;
+
+    *out_left = str_from_parts(s.ptr, idx);
+    *out_right = str_from_parts(s.ptr + idx + sep.len, s.len - idx - sep.len);
+    return true;
+}
+
 /*
  * ==========================================================================
  * 5. Iterators (Macros)
@@ -353,6 +390,27 @@ static inline bool str_split_line(str_t *input, str_t *out_line)
         for (char var = (src).ptr[_i_##var], _once_##var = 1;       \
              _once_##var;                                           \
              _once_##var = 0)
+
+/*
+ * ==========================================================================
+ * 6. Parsing (Numeric)
+ * ==========================================================================
+ */
+
+defResult(u64, const char*, ResU64);
+defResult(i64, const char*, ResI64);
+
+/**
+ * @brief Parse a u64 from a string slice.
+ * Returns error on overflow, empty input, or invalid characters.
+ */
+ResU64 str_parse_u64(str_t s);
+
+/**
+ * @brief Parse an i64 from a string slice.
+ * Supports optional '-' sign.
+ */
+ResI64 str_parse_i64(str_t s);
 
 /*
  * ==========================================================================
