@@ -8,7 +8,7 @@
 
 `fluf` is a foundational library designed to break the cycle of complex abstractions. It rejects "template-in-C" macro magic in favor of concrete, simple, and highly debuggable tools tailored for high-performance tasks like building compilers, tools, and emulators.
 
-> **Status:** **v0.3.0 (Feature Complete).** The Core infrastructure and Standard Library (including IO, System, and Unicode support) are fully implemented and tested.
+> **Status:** **v0.3.x (Feature Complete).** The Standard Library APIs are stable. Current focus is on cross-platform hardening (Windows/macOS) before v0.4.0 release.
 
 ## Core Philosophy
 
@@ -24,7 +24,7 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
 ### Core Infrastructure (`include/core/`)
 * **Type System:** Primitive aliases, safe casting macros, and `fmt()` generics.
 * **Memory:** `allocer_t` v-table interface and `layout_t`.
-* **Error Handling:** `Result<T,E>` and `Option<T>` monads.
+* **Error Handling:** `Result<T,E>` and `Option<T>` monads with `verify` macros.
 * **Testing:** Header-only test framework with Process Isolation (Death Tests).
 * **Hashing:** FNV-1a 64-bit implementation.
 
@@ -36,8 +36,8 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
     * `bump_t`: High-performance arena allocator with "Keep-the-Tip" reset strategy.
 * **Containers:**
     * `vec(T)`: Type-safe dynamic array (macro-wrapped, void* backed).
-    * `map(K, V)`: Open-addressing hash map with linear probing and tombstone support.
-    * `idlist_t`: Intrusive circular doubly linked list.
+    * `map(K, V)`: Open-addressing hash map with linear probing.
+    * `idlist_t`: Intrusive circular doubly linked list (header-only).
     * `bitset_t`: Dense bitset optimized with word-level operations and intrinsics.
 
 #### String & Text
@@ -45,9 +45,12 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
     * `str_t`: Non-owning string slice (View) with zero-copy splitting/trimming.
     * `string_t`: Owned, growable string builder ensuring null-termination.
     * `interner_t`: String Interner (Symbol Table) using Bump allocation for stable storage.
+* **Utilities:**
+    * `chars`: Unified ASCII character property checks.
+    * `parsing`: Safe string-to-number parsing (`str_parse_u64` etc.) with overflow protection.
 * **Unicode:**
     * `utf8`: Secure decoder/encoder handling overlong sequences and surrogates.
-    * `prop`: Binary-search based character properties (XID, WhiteSpace).
+    * `prop`: Binary-search based character properties (XID, WhiteSpace) generated from UCD 17.0.0.
 
 #### System & I/O
 * **FileSystem (`fs`):**
@@ -56,8 +59,14 @@ The design of `fluf` is a direct response to the "fake prosperity" of overly com
     * `dir`: Recursive directory walker (POSIX `opendir` / Windows `FindFirstFile`).
     * `srcmanager`: Source file manager mapping global offsets to file/line/col (Diagnostic infrastructure).
 * **Environment (`env`):**
-    * `args`: Iterator-based command line argument parser.
+    * `args`: Iterator-based command line argument parser with `args_foreach` macro.
     * `env`: Cross-platform environment variable getter/setter.
+
+## Roadmap
+
+* **Platform Hardening:** Verify and fix edge cases on Windows (MinGW) and macOS.
+* **CI/CD:** Add Windows and macOS runners to GitHub Actions.
+* **v0.4.0 Release:** Stable ABI/API freeze.
 
 ## Getting Started
 
@@ -148,7 +157,7 @@ int main(void) {
         printf("Var '" fmt_str(name) "' = %d\n", name, val ? *val : 0);
     }
 
-    // Cleanup (RAII-style usually, but explicit here)
+    // Cleanup (RAII-style usually, but explicit here for clarity)
     vec_deinit(active_vars);
     map_deinit(values);
     intern_deinit(&interner); // Frees all string memory at once!
