@@ -29,6 +29,7 @@
 #define _LOG_LEVEL_INFO "INFO"
 #define _LOG_LEVEL_WARN "WARN"
 #define _LOG_LEVEL_ERROR "ERROR"
+#define _LOG_LEVEL_FATAL "FATAL"
 #define _LOG_LEVEL_PANIC "PANIC"
 
 /**
@@ -74,6 +75,32 @@
 			__func__ __VA_OPT__(, ) __VA_ARGS__);   \
 		abort();                                        \
 	} while (0)
+
+/**
+ * @brief Log a fatal message and exit(1).
+ * * Consistent with other logs (shows file:line). 
+ * Use this when the error is severe enough to stop, 
+ * but you still want developer context.
+ */
+#define log_fatal(fmt, ...)                             \
+    do {                                                \
+        fprintf(stderr, "[%s] [%s:%d] %s(): " fmt "\n", \
+            _LOG_LEVEL_FATAL, __FILE__, __LINE__,       \
+            __func__ __VA_OPT__(, ) __VA_ARGS__);       \
+        exit(EXIT_FAILURE);                             \
+    } while (0)
+
+/**
+ * @brief Print a raw message and exit(1).
+ * * Optimized for CLI User Experience. No metadata prefix.
+ * Use this for "Usage errors" or "File not found".
+ */
+#define die(fmt, ...)                                   \
+    do {                                                \
+        fprintf(stderr, fmt "\n"                        \
+            __VA_OPT__(, ) __VA_ARGS__);                \
+        exit(EXIT_FAILURE);                             \
+    } while (0)
 
 /**
  * @brief Mark a piece of code as "Not Yet Implemented".
