@@ -135,7 +135,7 @@ NEXT_PATCH := $(shell echo $$(($(PATCH)+1)))
 NEW_TAG := v$(MAJOR).$(MINOR).$(NEXT_PATCH)
 
 # 4. default msg value
-MSG ?= Auto-release $(NEW_TAG)
+NOTE ?= Maintenance update
 
 .PHONY: btag
 
@@ -145,6 +145,6 @@ btag:
         exit 1; \
     fi
 	@echo "[RELEASE] Bumping Patch: $(CURRENT_TAG) -> $(NEW_TAG)"
-	@echo "[MESSAGE] $(MSG)"
-	git tag -a $(NEW_TAG) -m "$(MSG)"
+	@echo "[MESSAGE] Release $(NEW_TAG): $(NOTE)"
+	git tag -a $(NEW_TAG) -m "Release $(NEW_TAG): $(NOTE)"
 	git push origin $(NEW_TAG)
