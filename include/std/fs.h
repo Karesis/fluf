@@ -41,6 +41,16 @@ bool file_exists(const char *path);
  */
 bool file_remove(const char *path);
 
+/**
+ * @brief Check if path exists and is a directory.
+ */
+bool fs_is_dir(const char *path);
+
+/**
+ * @brief Check if path exists and is a regular file.
+ */
+bool fs_is_file(const char *path);
+
 /*
  * ==========================================================================
  * Read / Write Operations
