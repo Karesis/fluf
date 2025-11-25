@@ -213,7 +213,7 @@
  * @param it Iterator name (pointer to element type: T*).
  */
 #define vec_foreach(it, v) \
-	for (typeof((v).data) it = (v).data; it < (v).data + (v).len; ++it)
+	for (auto it = (v).data; it < (v).data + (v).len; ++it)
 
 /*
  * ==========================================================================
