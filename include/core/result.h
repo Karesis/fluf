@@ -227,3 +227,43 @@
 		}                                                         \
 		_try_res.val;                                             \
 	})
+
+/*
+ * ============================================================================
+ * 6. Adapters (Bridging Bool/Ptr to Result)
+ * ============================================================================
+ */
+
+/**
+ * @brief Check a boolean condition. If false, return an error.
+ *
+ * Usage:
+ * verify(Res, args_init(...), "Init failed");
+ */
+#define verify(T, cond, error_value) \
+	if (unlikely(!(cond)))       \
+	return (T)err(error_value)
+
+/**
+ * @brief Check if a pointer is not NULL. If NULL, return an error.
+ * Useful for malloc/fopen verifys.
+ *
+ * Usage:
+ * FILE *f = verify_ptr(fopen("file.txt", "r"), "Open failed");
+ */
+#define verify_ptr(ptr_expr, error_value)        \
+	({                                       \
+		auto _p = (ptr_expr);            \
+		if (unlikely(_p == nullptr))     \
+			return err(error_value); \
+		_p;                              \
+	})
+
+/**
+ * @brief Explicitly convert a boolean expression into a Result structure.
+ * Useful if you want to pass it to `try()` or assign it, rather than return.
+ *
+ * Usage:
+ * Result r = ok_or(Res, args_init(...), "Init failed");
+ */
+#define ok_or(T, cond, error_value) ((cond) ? (T)ok(true) : (T)err(error_value))
