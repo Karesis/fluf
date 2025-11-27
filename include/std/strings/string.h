@@ -1,5 +1,4 @@
-/*
- *    Copyright 2025 Karesis
+/* Copyright 2025 Karesis
  * 
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -81,6 +80,15 @@ void string_drop(string_t *s);
  * @brief Create a string from a C-string (Clone).
  */
 [[nodiscard]] string_t *string_from_cstr(allocer_t alc, const char *cstr);
+
+/**
+ * @brief Declare a stack-based string with RAII lifecycle.
+ * Usage: string_let(s, sys, 64);
+ */
+#define string_let(var_name, allocator, capacity)              \
+	defer(string_deinit) string_t var_name = { 0 };        \
+	massert(string_init(&(var_name), allocator, capacity), \
+		"String init failed")
 
 /*
  * ==========================================================================

@@ -57,6 +57,14 @@ typedef struct Args {
 void args_deinit(args_t *args);
 
 /**
+ * @brief Declare args parser with RAII lifecycle.
+ */
+#define args_let(var_name, allocator, argc, argv)              \
+	defer(args_deinit) args_t var_name = { 0 };            \
+	massert(args_init(&(var_name), allocator, argc, argv), \
+		"Args init failed")
+
+/**
  * @brief Get the next argument (consumes it).
  * @return The argument slice, or empty string/null-ptr slice if exhausted.
  * Use `str_is_valid(s.ptr)` check if needed, or just check logic flow.
@@ -107,8 +115,10 @@ str_t args_program_name(const args_t *args);
  * printf("Arg: " fmt(str) "\n", arg);
  * }
  */
-#define args_foreach(var, args_ptr) \
-    for (str_t var; args_has_next(args_ptr) ? (var = args_next(args_ptr), true) : false; )
+#define args_foreach(var, args_ptr)                                 \
+	for (str_t var; args_has_next(args_ptr) ?                   \
+				(var = args_next(args_ptr), true) : \
+				false;)
 
 /*
  * ==========================================================================

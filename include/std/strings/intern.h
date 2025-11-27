@@ -90,6 +90,13 @@ typedef struct Interner {
 void intern_deinit(interner_t *it);
 
 /**
+ * @brief Declare an interner with RAII lifecycle.
+ */
+#define intern_let(var_name, allocator)                   \
+	defer(intern_deinit) interner_t var_name = { 0 }; \
+	massert(intern_init(&(var_name), allocator), "Interner init failed")
+
+/**
  * @brief Create a new interner on the heap.
  */
 [[nodiscard]] interner_t *intern_new(allocer_t alc);

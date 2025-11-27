@@ -57,6 +57,14 @@ void bitset_deinit(bitset_t *bs);
 [[nodiscard]] bitset_t *bitset_new(allocer_t alc, usize num_bits);
 
 /**
+ * @brief Declare a bitset with RAII lifecycle.
+ */
+#define bitset_let(var_name, allocator, num_bits)              \
+	defer(bitset_deinit) bitset_t var_name = { 0 };        \
+	massert(bitset_init(&(var_name), allocator, num_bits), \
+		"Bitset init failed")
+
+/**
  * @brief Destroy a heap-allocated bitset.
  */
 void bitset_drop(bitset_t *bs);
